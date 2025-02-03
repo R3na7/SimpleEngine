@@ -37,7 +37,6 @@ FetchContent_Declare(
 )
 
 # Optimize Assimp build
-
 set(ASSIMP_BUILD_ASSIMP_TOOLS             OFF CACHE BOOL "Disable Assimp tools"             FORCE)
 set(ASSIMP_BUILD_TESTS                    OFF CACHE BOOL "Disable Assimp tests"             FORCE)
 set(ASSIMP_NO_EXPORT                      ON  CACHE BOOL "Disable export functionality"     FORCE)
@@ -61,6 +60,20 @@ file(DOWNLOAD "https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
              "${CMAKE_SOURCE_DIR}/external/stb_image/stb_image.h")
 
 
+#GLAD
+set(GLAD_URL "https://glad.dav1d.de/generated/tmpp_t79s5sglad/glad.zip")
+set(GLAD_ZIP "${CMAKE_SOURCE_DIR}/external/glad.zip")
+set(GLAD_DIR "${CMAKE_SOURCE_DIR}/external/glad")
+
+if(NOT EXISTS "${GLAD_DIR}")
+    file(DOWNLOAD ${GLAD_URL} ${GLAD_ZIP} SHOW_PROGRESS)
+    file(ARCHIVE_EXTRACT INPUT ${GLAD_ZIP} DESTINATION ${GLAD_DIR})
+endif()
+
+add_library(glad STATIC "${GLAD_DIR}/src/glad.c")
+target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
+
+
 add_executable(${PROJECT_NAME}
     src/main.cpp 
     src/Shaders/Shader.cpp
@@ -82,19 +95,18 @@ add_executable(${PROJECT_NAME}
     src/Lighting/DirectionLight.cpp
     src/Lighting/SpotLight.cpp
     src/World.cpp
-    glad/src/glad.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/external"
-    ${CMAKE_SOURCE_DIR}/glad/include
-    ${glm_SOURCE_DIR}
+    "${glm_SOURCE_DIR}"
 )
 
 find_package(OpenGL REQUIRED)
 
 if(OPENGL_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE
+        glad
         glfw
         assimp
         OpenGL::GL
