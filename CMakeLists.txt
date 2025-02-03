@@ -4,11 +4,11 @@ project(Engine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(NOT DEFINED(${CMAKE_BUILD_TYPE}))
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build" FORCE)
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_SYSTEM_NAME}/${CMAKE_BUILD_TYPE}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin")
 
 include(FetchContent)
 set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/external")
@@ -40,6 +40,24 @@ FetchContent_Declare(
 set(ASSIMP_BUILD_ASSIMP_TOOLS             OFF CACHE BOOL "Disable Assimp tools"             FORCE)
 set(ASSIMP_BUILD_TESTS                    OFF CACHE BOOL "Disable Assimp tests"             FORCE)
 set(ASSIMP_NO_EXPORT                      ON  CACHE BOOL "Disable export functionality"     FORCE)
+
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "Disable all importers" FORCE)
+set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "Enable OBJ importer" FORCE)
+set(ASSIMP_BUILD_FBX_IMPORTER ON CACHE BOOL "Enable FBX importer" FORCE)
+
+set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "Disable Draco compression" FORCE)
+set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "Enable Assimp's internal Zlib" FORCE)
+set(ASSIMP_BUILD_IRR_COMPILE_WITH_IRR_LMTS OFF CACHE BOOL "Disable IRR Lightmaps" FORCE)
+set(ASSIMP_BUILD_NONFREE_C4D_IMPORTER OFF CACHE BOOL "Disable non-free Cinema4D importer" FORCE)
+
+set(ASSIMP_BUILD_NO_MDL OFF CACHE BOOL "Disable MDL" FORCE)
+set(ASSIMP_BUILD_NO_3D OFF CACHE BOOL "Disable 3D" FORCE)
+set(ASSIMP_BUILD_NO_IFC OFF CACHE BOOL "Disable IFC" FORCE)
+set(ASSIMP_BUILD_NO_X3D OFF CACHE BOOL "Disable X3D" FORCE)
+
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "Disable treating warnings as errors" FORCE)
+set(ASSIMP_NO_VALIDATEDATA OFF CACHE BOOL "Disable validation data" FORCE)
+set(ASSIMP_BUILD_NO_EXPORT ON CACHE BOOL "Disable exporters" FORCE)
 
 FetchContent_MakeAvailable(assimp)
 
@@ -104,22 +122,21 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 find_package(OpenGL REQUIRED)
 
-if(OPENGL_FOUND)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        glad
-        glfw
-        assimp
-        OpenGL::GL
-    )
-else()
-    message(FATAL_ERROR "OpenGL not found!")
-endif()
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    glad
+    glfw
+    assimp
+    OpenGL::GL
 )
+
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/assets")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/assets"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets"
+    )
+endif()
 
 
 

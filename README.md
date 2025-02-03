@@ -17,4 +17,4 @@ cmake -G "YOUR_GENERATOR" ..
 cmake --build .
 ```
 
-The result of the build will be located in the folder ./build/SYSTEM_NAME/bin
+The result of the build will be located in the folder ./build/BUILD_TYPE/bin
