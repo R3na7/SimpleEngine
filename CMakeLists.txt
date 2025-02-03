@@ -21,8 +21,8 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(glfw)
@@ -37,27 +37,27 @@ FetchContent_Declare(
 )
 
 # Optimize Assimp build
-set(ASSIMP_BUILD_ASSIMP_TOOLS             OFF CACHE BOOL "Disable Assimp tools"             FORCE)
-set(ASSIMP_BUILD_TESTS                    OFF CACHE BOOL "Disable Assimp tests"             FORCE)
-set(ASSIMP_NO_EXPORT                      ON  CACHE BOOL "Disable export functionality"     FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS              OFF CACHE BOOL "Disable Assimp tools"                FORCE)
+set(ASSIMP_BUILD_TESTS                     OFF CACHE BOOL "Disable Assimp tests"                FORCE)
+set(ASSIMP_NO_EXPORT                       ON  CACHE BOOL "Disable export functionality"        FORCE)
 
-set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "Disable all importers" FORCE)
-set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "Enable OBJ importer" FORCE)
-set(ASSIMP_BUILD_FBX_IMPORTER ON CACHE BOOL "Enable FBX importer" FORCE)
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT  OFF CACHE BOOL "Disable all importers"               FORCE)
+set(ASSIMP_BUILD_OBJ_IMPORTER              ON  CACHE BOOL "Enable OBJ importer"                 FORCE)
+set(ASSIMP_BUILD_FBX_IMPORTER              ON  CACHE BOOL "Enable FBX importer"                 FORCE)
 
-set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "Disable Draco compression" FORCE)
-set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "Enable Assimp's internal Zlib" FORCE)
-set(ASSIMP_BUILD_IRR_COMPILE_WITH_IRR_LMTS OFF CACHE BOOL "Disable IRR Lightmaps" FORCE)
-set(ASSIMP_BUILD_NONFREE_C4D_IMPORTER OFF CACHE BOOL "Disable non-free Cinema4D importer" FORCE)
+set(ASSIMP_BUILD_DRACO                     OFF CACHE BOOL "Disable Draco compression"           FORCE)
+set(ASSIMP_BUILD_ZLIB                      ON  CACHE BOOL "Enable Assimp's internal Zlib"       FORCE)
+set(ASSIMP_BUILD_IRR_COMPILE_WITH_IRR_LMTS OFF CACHE BOOL "Disable IRR Lightmaps"               FORCE)
+set(ASSIMP_BUILD_NONFREE_C4D_IMPORTER      OFF CACHE BOOL "Disable non-free Cinema4D importer"  FORCE)
 
-set(ASSIMP_BUILD_NO_MDL OFF CACHE BOOL "Disable MDL" FORCE)
-set(ASSIMP_BUILD_NO_3D OFF CACHE BOOL "Disable 3D" FORCE)
-set(ASSIMP_BUILD_NO_IFC OFF CACHE BOOL "Disable IFC" FORCE)
-set(ASSIMP_BUILD_NO_X3D OFF CACHE BOOL "Disable X3D" FORCE)
+set(ASSIMP_BUILD_NO_MDL                    OFF CACHE BOOL "Disable MDL"                         FORCE)
+set(ASSIMP_BUILD_NO_3D                     OFF CACHE BOOL "Disable 3D"                          FORCE)
+set(ASSIMP_BUILD_NO_IFC                    OFF CACHE BOOL "Disable IFC"                         FORCE)
+set(ASSIMP_BUILD_NO_X3D                    OFF CACHE BOOL "Disable X3D"                         FORCE)
 
-set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "Disable treating warnings as errors" FORCE)
-set(ASSIMP_NO_VALIDATEDATA OFF CACHE BOOL "Disable validation data" FORCE)
-set(ASSIMP_BUILD_NO_EXPORT ON CACHE BOOL "Disable exporters" FORCE)
+set(ASSIMP_WARNINGS_AS_ERRORS              OFF CACHE BOOL "Disable treating warnings as errors" FORCE)
+set(ASSIMP_NO_VALIDATEDATA                 OFF CACHE BOOL "Disable validation data"             FORCE)
+set(ASSIMP_BUILD_NO_EXPORT                 ON  CACHE BOOL "Disable exporters"                   FORCE)
 
 FetchContent_MakeAvailable(assimp)
 
@@ -94,11 +94,8 @@ target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
 add_executable(${PROJECT_NAME}
     src/main.cpp 
-    src/Shaders/Shader.cpp
-    src/io/Window.cpp
-    src/io/Keyboard.cpp
-    src/io/Mouse.cpp
-    src/io/InputObjects.cpp
+
+    # Main components
     src/Object.cpp
     src/Mesh.cpp
     src/Model.cpp
@@ -106,14 +103,28 @@ add_executable(${PROJECT_NAME}
     src/Renderer.cpp
     src/Camera.cpp
     src/ObjectController.cpp
+    src/World.cpp
+
+    # Shaders
+    src/Shaders/Shader.cpp
+
+    # Input/Output
+    src/io/Window.cpp
+    src/io/Keyboard.cpp
+    src/io/Mouse.cpp
+    src/io/InputObjects.cpp
+
+    # Utilities
     src/Utilities/Time.cpp
     src/Utilities/ResourceManager.cpp
+
+    # Lighting
     src/Lighting/Light.cpp
     src/Lighting/PointLight.cpp
     src/Lighting/DirectionLight.cpp
     src/Lighting/SpotLight.cpp
-    src/World.cpp
 )
+
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/external"
