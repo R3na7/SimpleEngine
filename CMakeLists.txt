@@ -56,6 +56,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 
+#stb_image.h
+file(DOWNLOAD "https://raw.githubusercontent.com/nothings/stb/master/stb_image.h" 
+             "${CMAKE_SOURCE_DIR}/external/stb_image/stb_image.h")
+
+
 add_executable(${PROJECT_NAME}
     src/main.cpp 
     src/Shaders/Shader.cpp
@@ -81,9 +86,9 @@ add_executable(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+    "${CMAKE_SOURCE_DIR}/external"
     ${CMAKE_SOURCE_DIR}/glad/include
     ${glm_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}
 )
 
 find_package(OpenGL REQUIRED)
