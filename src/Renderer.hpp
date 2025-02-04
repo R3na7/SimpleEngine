@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "io/window.hpp"
+#include "io/Window.hpp"
 #include "Mesh.hpp"
 #include "Camera.hpp"
 #include "World.hpp"

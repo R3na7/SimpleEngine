@@ -1,7 +1,7 @@
 #ifndef SHADER_CPP
 #define SHADER_CPP
 
-#include "shader.hpp"
+#include "Shader.hpp"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {   

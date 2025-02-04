@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "shaders/shader.hpp"
+#include "Shaders/Shader.hpp"
 
 class Texture {
 public:
