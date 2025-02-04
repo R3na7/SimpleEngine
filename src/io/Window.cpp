@@ -1,7 +1,7 @@
 #ifndef WINDOW_CPP
 #define WINDOW_CPP
 
-#include "window.hpp"
+#include "Window.hpp"
 #include <thread>
 
 int Window::_windowCount = 0;
