@@ -104,17 +104,85 @@ vec3 CalcPointLight(PointLight light) {
    vec3 embient  = vec3(0.0);
 
    for (int i = 0;  i < materialDiffuseCount; ++i) {
-      ambient += light._ambient *        vec3(texture(material._diffuse[i], TexCoord));
-      diffuse += light._diffuse * diff * vec3(texture(material._diffuse[i], TexCoord));
+
+      if (i == 0) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[0], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[0], TexCoord));      
+      }
+      else if (i == 1) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[1], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[1], TexCoord));      
+      }
+      else if (i == 2) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[2], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[2], TexCoord));      
+      }
+      else if (i == 3) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[3], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[3], TexCoord));      
+      }
+      else if (i == 4) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[4], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[4], TexCoord));      
+      }      
+      else if (i == 5) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[5], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[5], TexCoord));      
+      }
+      else if (i == 6) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[6], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[6], TexCoord));      
+      }      
    }
    
    for (int i = 0; i < materialSpecularCount; ++i) {
       float spec = pow(max(dot(reflectDir, viewDir), 0.0), material._shininess[i]);
-      specular += light._specular * spec * vec3(texture(material._specular[i], TexCoord));
+
+      if (i == 0) {
+         specular += light._specular * spec * vec3(texture(material._specular[0], TexCoord));
+      }
+      else if (i == 1) {
+         specular += light._specular * spec * vec3(texture(material._specular[1], TexCoord));
+      }
+      else if (i == 2) {
+         specular += light._specular * spec * vec3(texture(material._specular[2], TexCoord));
+      }
+      else if (i == 3) {
+         specular += light._specular * spec * vec3(texture(material._specular[3], TexCoord));
+      }
+      else if (i == 4) {
+         specular += light._specular * spec * vec3(texture(material._specular[4], TexCoord));
+      }
+      else if (i == 5) {
+         specular += light._specular * spec * vec3(texture(material._specular[5], TexCoord));
+      }
+      else if (i == 6) {
+         specular += light._specular * spec * vec3(texture(material._specular[6], TexCoord));
+      }
    }
 
    for (int i = 0; i < materialEmbientCount; ++i) {
-      embient  += vec3(texture(material._embient[i], TexCoord));
+      if (i == 0) {
+         embient  += vec3(texture(material._embient[0], TexCoord));
+      }
+      else if (i == 1) {
+         embient  += vec3(texture(material._embient[1], TexCoord));
+      }
+      else if (i == 2) {
+         embient  += vec3(texture(material._embient[2], TexCoord));
+      }
+      else if (i == 3) {
+         embient  += vec3(texture(material._embient[3], TexCoord));
+      }
+      else if (i == 4) {
+         embient  += vec3(texture(material._embient[4], TexCoord));
+      }
+      else if (i == 5) {
+         embient  += vec3(texture(material._embient[5], TexCoord));
+      }
+      else if (i == 6) {
+         embient  += vec3(texture(material._embient[6], TexCoord));
+      }
    }   
 
    
@@ -151,17 +219,85 @@ vec3 CalcSpotLight(SpotLight light) {
 
    if (dot(-light._direction, lightDir) > light._outerCutOff) {
       for (int i = 0;  i < materialDiffuseCount; ++i) {
-         ambient += light._ambient *        vec3(texture(material._diffuse[i], TexCoord));
-         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[i], TexCoord));
+         if (i == 0) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[0], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[0], TexCoord));      
+         }
+         else if (i == 1) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[1], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[1], TexCoord));      
+         }
+         else if (i == 2) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[2], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[2], TexCoord));      
+         }
+         else if (i == 3) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[3], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[3], TexCoord));      
+         }
+         else if (i == 4) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[4], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[4], TexCoord));      
+         }      
+         else if (i == 5) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[5], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[5], TexCoord));      
+         }
+         else if (i == 6) {
+            ambient += light._ambient *        vec3(texture(material._diffuse[6], TexCoord));
+            diffuse += light._diffuse * diff * vec3(texture(material._diffuse[6], TexCoord));      
+         } 
       }
 
       for (int i = 0; i < materialSpecularCount; ++i) {
          float spec = pow(max(dot(reflectDir, viewDir), 0.0), material._shininess[i]);
-         specular += light._specular * spec * vec3(texture(material._specular[i], TexCoord));
+         
+         if (i == 0) {
+            specular += light._specular * spec * vec3(texture(material._specular[0], TexCoord));
+         }
+         else if (i == 1) {
+            specular += light._specular * spec * vec3(texture(material._specular[1], TexCoord));
+         }
+         else if (i == 2) {
+            specular += light._specular * spec * vec3(texture(material._specular[2], TexCoord));
+         }
+         else if (i == 3) {
+            specular += light._specular * spec * vec3(texture(material._specular[3], TexCoord));
+         }
+         else if (i == 4) {
+            specular += light._specular * spec * vec3(texture(material._specular[4], TexCoord));
+         }
+         else if (i == 5) {
+            specular += light._specular * spec * vec3(texture(material._specular[5], TexCoord));
+         }
+         else if (i == 6) {
+            specular += light._specular * spec * vec3(texture(material._specular[6], TexCoord));
+         }
       }
 
       for (int i = 0; i < materialEmbientCount; ++i) {
-         embient  += vec3(texture(material._embient[i], TexCoord));
+
+         if (i == 0) {
+            embient  += vec3(texture(material._embient[0], TexCoord));
+         }
+         else if (i == 1) {
+            embient  += vec3(texture(material._embient[1], TexCoord));
+         }
+         else if (i == 2) {
+            embient  += vec3(texture(material._embient[2], TexCoord));
+         }
+         else if (i == 3) {
+            embient  += vec3(texture(material._embient[3], TexCoord));
+         }
+         else if (i == 4) {
+            embient  += vec3(texture(material._embient[4], TexCoord));
+         }
+         else if (i == 5) {
+            embient  += vec3(texture(material._embient[5], TexCoord));
+         }
+         else if (i == 6) {
+            embient  += vec3(texture(material._embient[6], TexCoord));
+         }
       }   
 
 
@@ -203,17 +339,86 @@ vec3 CalcDirectionLight(DirectionLight light) {
    vec3 embient  = vec3(0.0);
 
    for (int i = 0;  i < materialDiffuseCount; ++i) {
-      ambient += light._ambient *        vec3(texture(material._diffuse[i], TexCoord));
-      diffuse += light._diffuse * diff * vec3(texture(material._diffuse[i], TexCoord));
+
+      if (i == 0) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[0], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[0], TexCoord));      
+      }
+      else if (i == 1) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[1], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[1], TexCoord));      
+      }
+      else if (i == 2) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[2], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[2], TexCoord));      
+      }
+      else if (i == 3) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[3], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[3], TexCoord));      
+      }
+      else if (i == 4) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[4], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[4], TexCoord));      
+      }      
+      else if (i == 5) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[5], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[5], TexCoord));      
+      }
+      else if (i == 6) {
+         ambient += light._ambient *        vec3(texture(material._diffuse[6], TexCoord));
+         diffuse += light._diffuse * diff * vec3(texture(material._diffuse[6], TexCoord));      
+      } 
+      
    }
 
    for (int i = 0; i < materialSpecularCount; ++i) {
       float spec = pow(max(dot(reflectDir, viewDir), 0.0), material._shininess[i]);
-      specular += light._specular * spec * vec3(texture(material._specular[i], TexCoord));
+
+      if (i == 0) {
+         specular += light._specular * spec * vec3(texture(material._specular[0], TexCoord));
+      }
+      else if (i == 1) {
+         specular += light._specular * spec * vec3(texture(material._specular[1], TexCoord));
+      }
+      else if (i == 2) {
+         specular += light._specular * spec * vec3(texture(material._specular[2], TexCoord));
+      }
+      else if (i == 3) {
+         specular += light._specular * spec * vec3(texture(material._specular[3], TexCoord));
+      }
+      else if (i == 4) {
+         specular += light._specular * spec * vec3(texture(material._specular[4], TexCoord));
+      }
+      else if (i == 5) {
+         specular += light._specular * spec * vec3(texture(material._specular[5], TexCoord));
+      }
+      else if (i == 6) {
+         specular += light._specular * spec * vec3(texture(material._specular[6], TexCoord));
+      }
    }
 
    for (int i = 0; i < materialEmbientCount; ++i) {
-      embient  += vec3(texture(material._embient[i], TexCoord));
+      if (i == 0) {
+         embient  += vec3(texture(material._embient[0], TexCoord));
+      }
+      else if (i == 1) {
+         embient  += vec3(texture(material._embient[1], TexCoord));
+      }
+      else if (i == 2) {
+         embient  += vec3(texture(material._embient[2], TexCoord));
+      }
+      else if (i == 3) {
+         embient  += vec3(texture(material._embient[3], TexCoord));
+      }
+      else if (i == 4) {
+         embient  += vec3(texture(material._embient[4], TexCoord));
+      }
+      else if (i == 5) {
+         embient  += vec3(texture(material._embient[5], TexCoord));
+      }
+      else if (i == 6) {
+         embient  += vec3(texture(material._embient[6], TexCoord));
+      }
    }  
 
    ambient  += light._ambient *   vec3(ourColor);
