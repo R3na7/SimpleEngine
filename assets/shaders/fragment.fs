@@ -4,7 +4,7 @@ out vec4 FragColor;
 struct Material {
    sampler2D _diffuse[10];
    sampler2D _specular[10];
-   sampler2D _embient[10];
+   sampler2D _emission[10];
 
    float _shininess[10];
 };
@@ -54,7 +54,7 @@ uniform int directionLightCount;
 uniform int spotLightCount;
 uniform int materialDiffuseCount;
 uniform int materialSpecularCount;
-uniform int materialEmbientCount;
+uniform int materialEmissionCount;
 
 uniform vec3 viewPos;
 uniform vec4 ourColor;
@@ -91,7 +91,7 @@ void main()
 
 void calcAmbient(out vec3 ambient, out vec3 diffuse, out vec3 light_ambient, out vec3 light_diffuse, out float diff);
 void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDir, out vec3 viewDir);
-void calcEmbient(out vec3 embient);
+void calcEmission(out vec3 emission);
 
 vec3 CalcPointLight(PointLight light) {
    vec3 lightDir = normalize(light._position - FragPos);
@@ -104,11 +104,11 @@ vec3 CalcPointLight(PointLight light) {
    vec3 ambient  = vec3(0.0);
    vec3 diffuse  = vec3(0.0);
    vec3 specular = vec3(0.0);
-   vec3 embient  = vec3(0.0);
+   vec3 emission  = vec3(0.0);
 
    calcAmbient(ambient, diffuse, light._ambient, light._diffuse, diff);
    calcSpecular(specular, light._specular, reflectDir, viewDir);
-   calcEmbient(embient);
+   calcEmission(emission);
 
    
    ambient  += light._ambient *   vec3(ourColor);
@@ -127,7 +127,7 @@ vec3 CalcPointLight(PointLight light) {
    diffuse *= attenuation;
    specular*= attenuation;
 
-   return (ambient + diffuse + specular + embient);
+   return (ambient + diffuse + specular + emission);
 }
 vec3 CalcSpotLight(SpotLight light) {
    vec3 lightDir = normalize(light._position - FragPos);
@@ -140,13 +140,13 @@ vec3 CalcSpotLight(SpotLight light) {
    vec3 ambient  = vec3(0.0);
    vec3 diffuse  = vec3(0.0);
    vec3 specular = vec3(0.0);
-   vec3 embient  = vec3(0.0);
+   vec3 emission  = vec3(0.0);
 
    if (dot(-light._direction, lightDir) > light._outerCutOff) {
 
-   calcAmbient(ambient, diffuse, light._ambient, light._diffuse, diff);
-   calcSpecular(specular, light._specular, reflectDir, viewDir);
-   calcEmbient(embient);
+      calcAmbient(ambient, diffuse, light._ambient, light._diffuse, diff);
+      calcSpecular(specular, light._specular, reflectDir, viewDir);
+      calcEmission(emission);
 
 
       float dist = length(light._position - FragPos);
@@ -159,12 +159,13 @@ vec3 CalcSpotLight(SpotLight light) {
       specular*= attenuation;
 
       float theta = dot(-light._direction, lightDir);
-      float epsilon = light._cutOff - light._outerCutOff;
-      float intesivity = clamp((theta - light._outerCutOff) / epsilon, 0.0, 1.0);
+      float epsilon = max(light._cutOff - light._outerCutOff, 0.001);
+      float intensity = clamp((theta - light._outerCutOff) / epsilon, 0.0, 1.0);
 
-      ambient *= intesivity;
-      diffuse *= intesivity;
-      specular*= intesivity;
+
+      ambient *= intensity;
+      diffuse *= intensity;
+      specular*= intensity;
    }
 
    ambient  += light._ambient *   vec3(ourColor);
@@ -172,7 +173,7 @@ vec3 CalcSpotLight(SpotLight light) {
    float spec = pow(max(dot(reflectDir, viewDir), 0.0), ourShininess);
    specular += light._specular * spec * vec3(ourColor);
 
-   return (ambient + diffuse + specular + embient);
+   return (ambient + diffuse + specular + emission);
 }
 vec3 CalcDirectionLight(DirectionLight light) {
    
@@ -184,18 +185,18 @@ vec3 CalcDirectionLight(DirectionLight light) {
    vec3 ambient  = vec3(0.0);
    vec3 diffuse  = vec3(0.0);
    vec3 specular = vec3(0.0);
-   vec3 embient  = vec3(0.0);
+   vec3 emission  = vec3(0.0);
 
    calcAmbient(ambient, diffuse, light._ambient, light._diffuse, diff);
    calcSpecular(specular, light._specular, reflectDir, viewDir);
-   calcEmbient(embient);
+   calcEmission(emission);
 
    ambient  += light._ambient *   vec3(ourColor);
    diffuse  += light._diffuse * diff *  vec3(ourColor);
    float spec = pow(max(dot(reflectDir, viewDir), 0.0), ourShininess);
    specular += light._specular * spec * vec3(ourColor);
 
-   return (ambient + diffuse + specular + embient);
+   return (ambient + diffuse + specular + emission);
 }
 
 
@@ -286,37 +287,37 @@ void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDi
 }
 
 
-void calcEmbient(out vec3 embient) {
-   for (int i = 0; i < materialEmbientCount; ++i) {
+void calcEmission(out vec3 emission) {
+   for (int i = 0; i < materialEmissionCount; ++i) {
       if (i == 0) {
-         embient  += vec3(texture(material._embient[0], TexCoord));
+         emission  += vec3(texture(material._emission[0], TexCoord));
       }
       else if (i == 1) {
-         embient  += vec3(texture(material._embient[1], TexCoord));
+         emission  += vec3(texture(material._emission[1], TexCoord));
       }
       else if (i == 2) {
-         embient  += vec3(texture(material._embient[2], TexCoord));
+         emission  += vec3(texture(material._emission[2], TexCoord));
       }
       else if (i == 3) {
-         embient  += vec3(texture(material._embient[3], TexCoord));
+         emission  += vec3(texture(material._emission[3], TexCoord));
       }
       else if (i == 4) {
-         embient  += vec3(texture(material._embient[4], TexCoord));
+         emission  += vec3(texture(material._emission[4], TexCoord));
       }
       else if (i == 5) {
-         embient  += vec3(texture(material._embient[5], TexCoord));
+         emission  += vec3(texture(material._emission[5], TexCoord));
       }
       else if (i == 6) {
-         embient  += vec3(texture(material._embient[6], TexCoord));
+         emission  += vec3(texture(material._emission[6], TexCoord));
       }
       else if (i == 7) {
-         embient  += vec3(texture(material._embient[7], TexCoord));
+         emission  += vec3(texture(material._emission[7], TexCoord));
       }
       else if (i == 8) {
-         embient  += vec3(texture(material._embient[8], TexCoord));
+         emission  += vec3(texture(material._emission[8], TexCoord));
       }
       else if (i == 9) {
-         embient  += vec3(texture(material._embient[9], TexCoord));
+         emission  += vec3(texture(material._emission[9], TexCoord));
       }
       
    }   
