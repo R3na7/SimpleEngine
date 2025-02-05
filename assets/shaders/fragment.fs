@@ -272,6 +272,16 @@ void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDi
       else if (i == 6) {
          specular += light_specular * spec * vec3(texture(material._specular[6], TexCoord));
       }
+      else if (i == 7) {
+         specular += light_specular * spec * vec3(texture(material._specular[7], TexCoord));
+      }
+      else if (i == 8) {
+         specular += light_specular * spec * vec3(texture(material._specular[8], TexCoord));
+      }
+      else if (i == 9) {
+         specular += light_specular * spec * vec3(texture(material._specular[9], TexCoord));
+      }
+      
    }
 }
 
@@ -299,5 +309,15 @@ void calcEmbient(out vec3 embient) {
       else if (i == 6) {
          embient  += vec3(texture(material._embient[6], TexCoord));
       }
+      else if (i == 7) {
+         embient  += vec3(texture(material._embient[7], TexCoord));
+      }
+      else if (i == 8) {
+         embient  += vec3(texture(material._embient[8], TexCoord));
+      }
+      else if (i == 9) {
+         embient  += vec3(texture(material._embient[9], TexCoord));
+      }
+      
    }   
 }
