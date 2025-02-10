@@ -102,5 +102,5 @@ std::string Texture::getFilename() const {  return _filename;   }
 void Texture::setShininess(float shininess) {    _shininess = shininess;    }
 
 Texture::~Texture() {
-    //glDeleteTextures(1, &_texture);
+    glDeleteTextures(1, &_texture);
 }
