@@ -3,9 +3,9 @@
 #include <algorithm>
 
 Model::Model(const std::vector<std::shared_ptr<Mesh>> & meshes, const std::string & modelName, 
-            std::vector<std::shared_ptr<Texture>> texturesDiffuse,     
-                std::vector<std::shared_ptr<Texture>> texturesSpecular,
-                    std::vector<std::shared_ptr<Texture>> texturesEmbient)
+            const std::vector<std::shared_ptr<Texture>> & texturesDiffuse,     
+                const std::vector<std::shared_ptr<Texture>> & texturesSpecular,
+                    const std::vector<std::shared_ptr<Texture>> & texturesEmbient)
 : Object(modelName), _meshes(meshes), _texturesDiffuse(texturesDiffuse), _texturesSpecular(texturesSpecular), _texturesEmbient(texturesEmbient) {}
 
 Model::Model(const std::vector<Mesh> & meshes)
@@ -23,10 +23,10 @@ void Model::ApplyTextureDiffuse(const std::string & textureDiffuseName) {
         }
     }
 
-    Texture texture(textureDiffuseName);
+    std::shared_ptr<Texture> texture = std::make_shared<Texture>(textureDiffuseName);
 
-    if (texture.isLoaded()) {
-        _texturesDiffuse.emplace_back(std::make_shared<Texture>(texture));
+    if (texture->isLoaded()) {
+        _texturesDiffuse.push_back(texture);
 
         for (auto mesh : _meshes) {
             mesh->loadTextureDiffuse(_texturesDiffuse[_texturesDiffuse.size() - 1].get());
@@ -42,10 +42,10 @@ void Model::ApplyTextureSpecular(const std::string & textureSpecularName) {
         }
     }
 
-    Texture texture(textureSpecularName);
+    std::shared_ptr<Texture> texture = std::make_shared<Texture>(textureSpecularName);
 
-    if (texture.isLoaded()) {
-        _texturesSpecular.emplace_back(std::make_shared<Texture>(texture));
+    if (texture->isLoaded()) {
+        _texturesSpecular.push_back(texture);
 
         for (auto mesh : _meshes) {
             mesh->loadTextureSpecular(_texturesSpecular[_texturesSpecular.size() - 1].get());
@@ -61,10 +61,10 @@ void Model::ApplyTextureAmbient(const std::string & textureEmbientName) {
         }
     }
 
-    Texture texture(textureEmbientName);
+    std::shared_ptr<Texture> texture = std::make_shared<Texture>(textureEmbientName);
 
-    if (texture.isLoaded()) {
-        _texturesEmbient.emplace_back(std::make_shared<Texture>(texture));
+    if (texture->isLoaded()) {
+        _texturesEmbient.push_back(texture);
 
         for (auto mesh : _meshes) {
             mesh->loadTextureEmbient(_texturesEmbient[_texturesEmbient.size() - 1].get());

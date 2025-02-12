@@ -7,9 +7,9 @@
 class Model : public Object {
 public:
     Model(const std::vector<std::shared_ptr<Mesh>> & meshes, const std::string & modelName, 
-            std::vector<std::shared_ptr<Texture>> texturesDiffuse = {},     
-                std::vector<std::shared_ptr<Texture>> texturesSpecular = {},
-                    std::vector<std::shared_ptr<Texture>> texturesEmbient = {});
+            const std::vector<std::shared_ptr<Texture>> & texturesDiffuse = {},     
+                const std::vector<std::shared_ptr<Texture>> & texturesSpecular = {},
+                    const std::vector<std::shared_ptr<Texture>> & texturesEmbient = {});
 
     Model(const std::vector<Mesh> & meshes);
 
