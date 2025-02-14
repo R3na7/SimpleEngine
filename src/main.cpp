@@ -96,6 +96,8 @@ int main() {
     Texture container("assets/textures/container2.png");
     Texture container_specular("assets/textures/container2_specular.png");
 
+    Texture light("assets/textures/brightness.png");
+
     Mesh cube(cube_vertexs, cube_indeces, {0.1f, 0.9f, 0.1f, 1.0f});
 
     World world("world", {&camera});

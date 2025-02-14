@@ -12,15 +12,19 @@ public:
     void setAmbient(const glm::vec3 & ambient);
     void setDiffuse(const glm::vec3 & diffuse);
     void setSpecular(const glm::vec3 & specular);
+    void setVisible(const bool & _turn);
 
     glm::vec3 getAmbient () const;
     glm::vec3 getDiffuse () const;
     glm::vec3 getSpecular() const;
+    bool      isVisible()   const;
 
 protected:
     glm::vec3 _ambient;
     glm::vec3 _diffuse;
     glm::vec3 _specular;
+
+    bool _visible = true;
 };
 
 #endif
