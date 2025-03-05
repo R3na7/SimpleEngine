@@ -10,68 +10,6 @@
 #include "Utilities/ResourceManager.hpp"
 
 int main() {
-    // Вершины куба
-    std::vector<float> cube_vertices = {
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-
-        // Задняя грань
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-
-        // Левая грань
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-
-        // Правая грань
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-
-        // Верхняя грань
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-
-        // Нижняя грань
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f
-    };
-
-    // Индексы для EBO
-    std::vector<unsigned int> cube_indeces = {
-        // Передняя грань
-        0, 1, 2, 0, 2, 3,
-        // Задняя грань
-        4, 5, 6, 4, 6, 7,
-        // Левая грань
-        8, 9, 10, 8, 10, 11,
-        // Правая грань
-        12, 13, 14, 12, 14, 15,
-        // Верхняя грань
-        16, 17, 18, 16, 18, 19,
-        // Нижняя грань
-        20, 21, 22, 20, 22, 23
-    };
-    std::vector<Vertex> cube_vertexs;
-    for (int i = 0; i < cube_vertices.size(); i += 8) {
-        cube_vertexs.emplace_back(
-            glm::vec3{cube_vertices[i+0], cube_vertices[i+1], cube_vertices[i+2]}, 
-                glm::vec2{cube_vertices[i+6], cube_vertices[i+7]},
-                    glm::vec3{cube_vertices[i+3], cube_vertices[i+4], cube_vertices[i+5]}
-        );
-    }
-
     Time::init();
     ResourceManager::init();
     glfwInit();
@@ -98,7 +36,7 @@ int main() {
 
     Texture light("assets/textures/brightness.png");
 
-    Mesh cube(cube_vertexs, cube_indeces, {0.1f, 0.9f, 0.1f, 1.0f});
+    Mesh cube = Mesh::getCube("cube", {0.1f, 0.9f, 0.1f, 1.0f});
 
     World world("world", {&camera});
     //Model model = ResourceManager::loadModel("assets/models/backpack/backpack.obj");

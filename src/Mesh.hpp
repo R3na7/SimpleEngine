@@ -65,6 +65,8 @@ public:
     const std::vector<Texture *> & getTexturesSpecular() const;
     const std::vector<Texture *> & getTexturesEmbient()  const;
 
+    static Mesh getCube(const std::string & objectName, const glm::vec4 & color);
+
     ~Mesh();
 private:
     std::vector<Vertex> _vertices{};

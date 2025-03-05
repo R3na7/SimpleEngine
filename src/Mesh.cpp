@@ -125,6 +125,62 @@ void Mesh::eboInit() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * _indices.size(), _indices.begin().base(), GL_STATIC_DRAW);
 }
 
+static Mesh getCube(const std::string & objectName, const glm::vec4 & color) {
+
+    std::vector<Vertex> cube_vertexs {
+        Vertex({-0.5f, -0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  0.0f,  0.0f}),
+        Vertex({ 0.5f, -0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  1.0f,  0.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  1.0f,  1.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  0.0f,  1.0f}),
+
+        // Задняя грань
+        Vertex({-0.5f, -0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  0.0f,  0.0f}),
+        Vertex({ 0.5f, -0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  1.0f,  0.0f}),
+        Vertex({ 0.5f,  0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  1.0f,  1.0f}),
+        Vertex({-0.5f,  0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  0.0f,  1.0f}),
+
+        // Левая грань
+        Vertex({-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f},  {0.0f,  0.0f,  0.0f}),
+        Vertex({-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f},  {0.0f,  1.0f,  0.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f},  {0.0f,  1.0f,  1.0f}),
+        Vertex({-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f},  {0.0f,  0.0f,  1.0f}),
+
+        // Правая грань
+        Vertex({0.5f, -0.5f, -0.5f},  {1.0f,  0.0f},  {0.0f,  0.0f,  0.0f}),
+        Vertex({0.5f,  0.5f, -0.5f},  {1.0f,  0.0f},  {0.0f,  1.0f,  0.0f}),
+        Vertex({0.5f,  0.5f,  0.5f},  {1.0f,  0.0f},  {0.0f,  1.0f,  1.0f}),
+        Vertex({0.5f, -0.5f,  0.5f},  {1.0f,  0.0f},  {0.0f,  0.0f,  1.0f}),
+
+        // Верхняя грань
+        Vertex({-0.5f,  0.5f, -0.5f},  {0.0f,  1.0f},  {0.0f,  0.0f,  0.0f}),
+        Vertex({ 0.5f,  0.5f, -0.5f},  {0.0f,  1.0f},  {0.0f,  1.0f,  0.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f},  {0.0f,  1.0f},  {0.0f,  1.0f,  1.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f},  {0.0f,  1.0f},  {0.0f,  0.0f,  1.0f}),
+
+        // Нижняя грань
+        Vertex({-0.5f, -0.5f, -0.5f},  {0.0f, -1.0f},  {0.0f,  0.0f,  0.0f}),
+        Vertex({ 0.5f, -0.5f, -0.5f},  {0.0f, -1.0f},  {0.0f,  1.0f,  0.0f}),
+        Vertex({ 0.5f, -0.5f,  0.5f},  {0.0f, -1.0f},  {0.0f,  1.0f,  1.0f}),
+        Vertex({-0.5f, -0.5f,  0.5f},  {0.0f, -1.0f},  {0.0f,  0.0f,  1.0f})
+    };
+
+    std::vector<unsigned int> cube_indeces = {
+        // Передняя грань
+        0, 1, 2, 0, 2, 3,
+        // Задняя грань
+        4, 5, 6, 4, 6, 7,
+        // Левая грань
+        8, 9, 10, 8, 10, 11,
+        // Правая грань
+        12, 13, 14, 12, 14, 15,
+        // Верхняя грань
+        16, 17, 18, 16, 18, 19,
+        // Нижняя грань
+        20, 21, 22, 20, 22, 23
+    };
+
+    return Mesh(cube_vertexs, cube_indeces, color, objectName);
+}
 
 Mesh::~Mesh() {   
     glDeleteVertexArrays(1, &_VAO);
