@@ -38,8 +38,13 @@ int main() {
     cube.setColor({0.1f, 0.1f, 0.9f, 1.0f});
     Model blue_cube({std::make_shared<Mesh>(cube)}, "blue");
     
+    Model backpack = ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx");
+    backpack.ApplyTextureDiffuse("assets/models/backpack/diffuse.jpg");
+    backpack.ApplyTextureSpecular("assets/models/backpack/specular.jpg");
+
     world.addModel(green_cube);
     world.addModel(blue_cube);
+    world.addModel(backpack);
 
     DirectionLight dirlight;
     world.addDirectionLight(&dirlight);
@@ -56,7 +61,7 @@ int main() {
         camera_controller.keyboardInputs();
         
 
-        
+
 
 
 
