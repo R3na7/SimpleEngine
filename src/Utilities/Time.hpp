@@ -17,8 +17,8 @@ private:
 
     static Time * _instance;
 
-    float _lastTime;
-    float _deltaTime;
+    float _lastTime = 0.0f;
+    float _deltaTime = 0.0f;
 };
 
 #endif

@@ -125,7 +125,7 @@ void Mesh::eboInit() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * _indices.size(), _indices.begin().base(), GL_STATIC_DRAW);
 }
 
-static Mesh getCube(const std::string & objectName, const glm::vec4 & color) {
+Mesh Mesh::getCube(const std::string & objectName, const glm::vec4 & color) {
 
     std::vector<Vertex> cube_vertexs {
         Vertex({-0.5f, -0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  0.0f,  0.0f}),

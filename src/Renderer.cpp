@@ -1,8 +1,10 @@
 #include "Renderer.hpp"
-
+#include "Utilities/Time.hpp"
 
 Renderer::Renderer(Window * window, Shader * shader)
 : _window(window), _shader(shader) {}
+
+int Renderer::getFPS() const {  return fps; }
 
 void Renderer::render(const World & world) {
     if (!_window->isOpen()) return;
@@ -98,6 +100,14 @@ void Renderer::render(const World & world) {
             
             glDrawElements(GL_TRIANGLES  , mesh->getIndicesCount(), GL_UNSIGNED_INT, 0);
         }
+    }
+
+    deltaTime += Time::DeltaTime();
+    ++frameCount;
+    if (deltaTime >= 1.0f) {
+        deltaTime = 0.0f;
+        fps = frameCount;
+        frameCount = 0;
     }
 
     _window->swapBuffers();

@@ -12,8 +12,7 @@ float Time::LastTime () {   return _instance->_lastTime;     }
 
 void Time::update() {
     if (!_instance) return;
-
-    _instance->_deltaTime = glfwGetTime() - _instance->_lastTime;
+    _instance->_deltaTime = static_cast<float>(glfwGetTime()) - _instance->_lastTime;
     _instance->_lastTime = glfwGetTime();
 }
 
