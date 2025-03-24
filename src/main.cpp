@@ -47,7 +47,8 @@ int main() {
     world.addModel(backpack);
 
     DirectionLight dirlight;
-    world.addDirectionLight(&dirlight);
+    dirlight.setName("dirlight");
+    world.addDirectionLight(dirlight);
 
     world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
     world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
@@ -55,12 +56,14 @@ int main() {
     ObjectController camera_controller(world[camera.getName()], &controllers);
 
 
+
     glfwSetInputMode(window.getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    while (Window::havesWindow()) {   
+    while (Window::havesWindow()) {
+        
         camera_controller.mouseInputs();
         camera_controller.keyboardInputs();
         
-
+        world.getDirectionLight("dirlight")->setDirection({sin(glfwGetTime()), 0.8f, sin(glfwGetTime())});
 
 
 

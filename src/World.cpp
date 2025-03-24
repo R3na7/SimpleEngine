@@ -1,11 +1,12 @@
 #include "World.hpp"
+#include <algorithm>
 
 World::World(const std::string & worldName, 
                 const std::vector<Camera *> & cameras, const std::vector<Mesh *> & meshes)
 : _worldName(worldName) {
 
     for (int i = 0; i < meshes.size(); ++i)  addMesh(*meshes[i]);
-    for (int i = 0; i < cameras.size(); ++i) addCamera(cameras[i]);
+    for (int i = 0; i < cameras.size(); ++i) addCamera(*cameras[i]);
 
     _currentCamera = _camerasVector[0];
 }
@@ -14,7 +15,7 @@ World::World(const std::string & fileName) {
     // coming soon...
 }
 
-void World::addMesh(const Mesh & mesh) {
+std::shared_ptr<Mesh> World::addMesh(const Mesh & mesh) {
     std::string name = mesh.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = mesh.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -26,9 +27,10 @@ void World::addMesh(const Mesh & mesh) {
     _meshesVector[_meshesVector.size() - 1]->setname(name);
 
     _objectsMap[name] = _meshesVector[_meshesVector.size() - 1];
+    return _meshesVector[_meshesVector.size() - 1];
 }
 
-void World::addModel(const Model & model) {
+std::shared_ptr<Model> World::addModel(const Model & model) {
     std::string name = model.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = model.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -40,60 +42,65 @@ void World::addModel(const Model & model) {
     _modelVector[_modelVector.size() - 1]->setname(name);
 
     _objectsMap[name] = _modelVector[_modelVector.size() - 1];
+    return _modelVector[_modelVector.size() - 1];
 }
 
-void World::addCamera(Camera * camera) {
-    std::string name = camera->getName();
+std::shared_ptr<Camera> World::addCamera(const Camera & camera) {
+    std::string name = camera.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
-        name = camera->getName() + "_" + std::to_string(_countDuplicated[name]);
+        name = camera.getName() + "_" + std::to_string(_countDuplicated[name]);
     } else {
         _countDuplicated[name] = 1;
     }
 
-    _camerasVector.push_back(std::make_shared<Camera>(*camera));
+    _camerasVector.push_back(std::make_shared<Camera>(camera));
     _camerasVector[_camerasVector.size() - 1]->setname(name);
 
     _objectsMap[name] = _camerasVector[_camerasVector.size() - 1];
+    return _camerasVector[_camerasVector.size() - 1];
 }
 
-void World::addPointLight(PointLight * pointLight) {
-    std::string name = pointLight->getName();
+std::shared_ptr<PointLight> World::addPointLight(const PointLight & pointLight = PointLight()) {
+    std::string name = pointLight.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
-        name = pointLight->getName() + "_" + std::to_string(_countDuplicated[name]);
+        name = pointLight.getName() + "_" + std::to_string(_countDuplicated[name]);
     } else {
         _countDuplicated[name] = 1;
     }
 
-    _pointLightsVector.push_back(std::make_shared<PointLight>(*pointLight));
+    _pointLightsVector.push_back(std::make_shared<PointLight>(pointLight));
     _pointLightsVector[_pointLightsVector.size() - 1]->setname(name);
 
     _objectsMap[name] = _pointLightsVector[_pointLightsVector.size() - 1];
+    return _pointLightsVector[_pointLightsVector.size() - 1];
 }
 
-void World::addSpotLight(SpotLight * spotLight) {
-    std::string name = spotLight->getName();
+std::shared_ptr<SpotLight> World::addSpotLight(const SpotLight & spotLight = SpotLight()) {
+    std::string name = spotLight.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
-        name = spotLight->getName() + "_" + std::to_string(_countDuplicated[name]);
+        name = spotLight.getName() + "_" + std::to_string(_countDuplicated[name]);
     } else {
         _countDuplicated[name] = 1;
     }
 
-    _spotLightsVector.push_back(std::make_shared<SpotLight>(*spotLight));
+    _spotLightsVector.push_back(std::make_shared<SpotLight>(spotLight));
     _spotLightsVector[_spotLightsVector.size() - 1]->setname(name);
 
     _objectsMap[name] = _spotLightsVector[_spotLightsVector.size() - 1];
+    return _spotLightsVector[_spotLightsVector.size() - 1];
 }
 
-void World::addDirectionLight(DirectionLight * directionLight) {
-    std::string name = directionLight->getName();
+std::shared_ptr<DirectionLight> World::addDirectionLight(const DirectionLight & directionLight = DirectionLight{}) {
+    std::string name = directionLight.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
-        name = directionLight->getName() + "_" + std::to_string(_countDuplicated[name]);
+        name = directionLight.getName() + "_" + std::to_string(_countDuplicated[name]);
     } else {
         _countDuplicated[name] = 1;
     }
 
-    _directionLightsVector.push_back(std::make_shared<DirectionLight>(*directionLight));
+    _directionLightsVector.push_back(std::make_shared<DirectionLight>(directionLight));
     _directionLightsVector[_directionLightsVector.size() - 1]->setName(name);
+    return _directionLightsVector[_directionLightsVector.size() - 1];
 }
 
 
@@ -219,4 +226,19 @@ const std::vector<std::shared_ptr<Mesh>> &           World::getMeshes()         
 const std::vector<std::shared_ptr<Model>> &          World::getModels()          const {    return _modelVector;           }
 const std::vector<std::shared_ptr<PointLight>> &     World::getPointLights()     const {    return _pointLightsVector;     }
 const std::vector<std::shared_ptr<SpotLight>> &      World::getSpotLights()      const {    return _spotLightsVector;      }
+
 const std::vector<std::shared_ptr<DirectionLight>> & World::getDirectionLights() const {    return _directionLightsVector; }
+
+std::shared_ptr<DirectionLight> World::getDirectionLight(const std::string& dirLightName) {
+
+    auto it = std::find_if(_directionLightsVector.begin(), _directionLightsVector.end(),
+        [&dirLightName](const std::shared_ptr<DirectionLight>& directionLight) {
+            return directionLight->getName() == dirLightName;
+        });
+    
+    if (it != _directionLightsVector.end()) {
+        return *it;
+    }
+
+    return addDirectionLight();
+}

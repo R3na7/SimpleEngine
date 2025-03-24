@@ -22,15 +22,14 @@ public:
 
     World(const std::string & fileName);
 
-    void addMesh          (const Mesh & mesh);
-    void addModel         (const Model & model);
-    void addCamera        (Camera * camera);
-    void addPointLight    (PointLight * pointLight);
-    void addSpotLight     (SpotLight * spotLight);
-    void addDirectionLight(DirectionLight * directionLight);
+    std::shared_ptr<Mesh>           addMesh          (const Mesh & mesh);
+    std::shared_ptr<Model>          addModel         (const Model & model);
+    std::shared_ptr<Camera>         addCamera        (const Camera & camera);
+    std::shared_ptr<PointLight>     addPointLight    (const PointLight & pointLight);
+    std::shared_ptr<SpotLight>      addSpotLight     (const SpotLight & spotLight);
+    std::shared_ptr<DirectionLight> addDirectionLight(const DirectionLight & directionLight);
 
     void removeMesh          (const std::string & nameMesh);
-    
     void removeCamera        (const std::string & nameCamera);
     void removePointLight    (const std::string & namePointLight);
     void removeSpotLight     (const std::string & nameSpotLight);
@@ -48,7 +47,9 @@ public:
     const std::vector<std::shared_ptr<Model>> &          getModels()          const;
     const std::vector<std::shared_ptr<PointLight>> &     getPointLights()     const; 
     const std::vector<std::shared_ptr<SpotLight>> &      getSpotLights()      const;
+
     const std::vector<std::shared_ptr<DirectionLight>> & getDirectionLights() const;
+    std::shared_ptr<DirectionLight> getDirectionLight(const std::string & dirLightName);
 private:
     std::string _worldName;
 
