@@ -1,8 +1,13 @@
 #include "Renderer.hpp"
 #include "Utilities/Time.hpp"
 
-Renderer::Renderer(Window * window, Shader * shader)
-: _window(window), _shader(shader) {}
+Renderer::Renderer(Window & window)
+: 
+_window(&window), 
+_shaderModels(std::make_unique<Shader>(Shader("assets/shaders/vertexModel.vs", "assets/shaders/fragmentModel.fs")))
+{
+
+}
 
 int Renderer::getFPS() const {  return fps; }
 
@@ -12,9 +17,9 @@ void Renderer::clearScreen() const {
 }
 
 void Renderer::setupCamera(const World & world) const {
-    _shader->uniformMatrix4("projection", world.getCurrentCamera().getProjectionMatrix());
-    _shader->uniformMatrix4("view"      , world.getCurrentCamera().getViewMatrix());
-    _shader->uniform3f("viewPos", world.getCurrentCamera().position());
+    _shaderModels->uniformMatrix4("projection", world.getCurrentCamera()->getProjectionMatrix());
+    _shaderModels->uniformMatrix4("view"      , world.getCurrentCamera()->getViewMatrix());
+    _shaderModels->uniform3f("viewPos", world.getCurrentCamera()->position());
 }
 
 void Renderer::updateFps() {
@@ -32,45 +37,45 @@ void Renderer::updateFps() {
 void Renderer::renderLights(const World & world) const {
     int index = 0;
     
-    _shader->uniform1i("pointLightCount", world.getPointLights().size());
+    _shaderModels->uniform1i("pointLightCount", world.getPointLights().size());
     for (const auto & pointLight : world.getPointLights()) {
-        _shader->uniform3f("pointLights[" + std::to_string(index) + "]._position",  pointLight->position());
+        _shaderModels->uniform3f("pointLights[" + std::to_string(index) + "]._position",  pointLight->position());
 
-        _shader->uniform1f("pointLights[" + std::to_string(index) + "]._constant",  pointLight->getConstant());
-        _shader->uniform1f("pointLights[" + std::to_string(index) + "]._linear",    pointLight->getLinear());
-        _shader->uniform1f("pointLights[" + std::to_string(index) + "]._quadratic", pointLight->getQuadratic());
+        _shaderModels->uniform1f("pointLights[" + std::to_string(index) + "]._constant",  pointLight->getConstant());
+        _shaderModels->uniform1f("pointLights[" + std::to_string(index) + "]._linear",    pointLight->getLinear());
+        _shaderModels->uniform1f("pointLights[" + std::to_string(index) + "]._quadratic", pointLight->getQuadratic());
 
-        _shader->uniform3f("pointLights[" + std::to_string(index) + "]._ambient",   pointLight->getAmbient());
-        _shader->uniform3f("pointLights[" + std::to_string(index) + "]._diffuse",   pointLight->getDiffuse());
-        _shader->uniform3f("pointLights[" + std::to_string(index) + "]._specular",  pointLight->getSpecular());
+        _shaderModels->uniform3f("pointLights[" + std::to_string(index) + "]._ambient",   pointLight->getAmbient());
+        _shaderModels->uniform3f("pointLights[" + std::to_string(index) + "]._diffuse",   pointLight->getDiffuse());
+        _shaderModels->uniform3f("pointLights[" + std::to_string(index) + "]._specular",  pointLight->getSpecular());
         index += 1;
     }
     index = 0;
 
-    _shader->uniform1i("spotLightCount", world.getSpotLights().size());
+    _shaderModels->uniform1i("spotLightCount", world.getSpotLights().size());
     for (const auto & spotLight : world.getSpotLights()) {
-        _shader->uniform3f("spotLights[" + std::to_string(index) + "]._position",    spotLight->position());
-        _shader->uniform3f("spotLights[" + std::to_string(index) + "]._direction",   spotLight->lookAt());
-        _shader->uniform1f("spotLights[" + std::to_string(index) + "]._cutOff",      glm::cos(glm::radians(spotLight->getCutOff())));
-        _shader->uniform1f("spotLights[" + std::to_string(index) + "]._outerCutOff", glm::cos(glm::radians(spotLight->getOuterCutOff())));
-        _shader->uniform1f("spotLights[" + std::to_string(index) + "]._constant",    spotLight->getConstant());
-        _shader->uniform1f("spotLights[" + std::to_string(index) + "]._linear",      spotLight->getLinear());
-        _shader->uniform1f("spotLights[" + std::to_string(index) + "]._quadratic",   spotLight->getQuadratic());
+        _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._position",    spotLight->position());
+        _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._direction",   spotLight->lookAt());
+        _shaderModels->uniform1f("spotLights[" + std::to_string(index) + "]._cutOff",      glm::cos(glm::radians(spotLight->getCutOff())));
+        _shaderModels->uniform1f("spotLights[" + std::to_string(index) + "]._outerCutOff", glm::cos(glm::radians(spotLight->getOuterCutOff())));
+        _shaderModels->uniform1f("spotLights[" + std::to_string(index) + "]._constant",    spotLight->getConstant());
+        _shaderModels->uniform1f("spotLights[" + std::to_string(index) + "]._linear",      spotLight->getLinear());
+        _shaderModels->uniform1f("spotLights[" + std::to_string(index) + "]._quadratic",   spotLight->getQuadratic());
 
-        _shader->uniform3f("spotLights[" + std::to_string(index) + "]._ambient",     spotLight->getAmbient());
-        _shader->uniform3f("spotLights[" + std::to_string(index) + "]._diffuse",     spotLight->getDiffuse());
-        _shader->uniform3f("spotLights[" + std::to_string(index) + "]._specular",    spotLight->getSpecular());
+        _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._ambient",     spotLight->getAmbient());
+        _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._diffuse",     spotLight->getDiffuse());
+        _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._specular",    spotLight->getSpecular());
         index += 1;
     }
     index = 0;
 
-    _shader->uniform1i("directionLightCount", world.getDirectionLights().size());
+    _shaderModels->uniform1i("directionLightCount", world.getDirectionLights().size());
     for (const auto & directionLight : world.getDirectionLights()) {
-        _shader->uniform3f("directionLights[" + std::to_string(index) + "]._direction",  directionLight->getDirection());
+        _shaderModels->uniform3f("directionLights[" + std::to_string(index) + "]._direction",  directionLight->getDirection());
 
-        _shader->uniform3f("directionLights[" + std::to_string(index) + "]._ambient",   directionLight->getAmbient());
-        _shader->uniform3f("directionLights[" + std::to_string(index) + "]._diffuse",   directionLight->getDiffuse());
-        _shader->uniform3f("directionLights[" + std::to_string(index) + "]._specular",  directionLight->getSpecular());
+        _shaderModels->uniform3f("directionLights[" + std::to_string(index) + "]._ambient",   directionLight->getAmbient());
+        _shaderModels->uniform3f("directionLights[" + std::to_string(index) + "]._diffuse",   directionLight->getDiffuse());
+        _shaderModels->uniform3f("directionLights[" + std::to_string(index) + "]._specular",  directionLight->getSpecular());
         index += 1;
     }
 }
@@ -78,30 +83,30 @@ void Renderer::renderLights(const World & world) const {
 void Renderer::renderMesh(const std::shared_ptr<Mesh> mesh) const {
     mesh->bindVertexArray();
 
-    _shader->uniformMatrix4("modelMesh", mesh->getModel());
-    _shader->uniform4f("ourColor", mesh->getColor());
-    _shader->uniform1f("ourShininess", mesh->getShininess());
+    _shaderModels->uniformMatrix4("modelMesh", mesh->getModel());
+    _shaderModels->uniform4f("ourColor", mesh->getColor());
+    _shaderModels->uniform1f("ourShininess", mesh->getShininess());
     
     int index = 0;
 
     int id = 0;
-    _shader->uniform1i("materialDiffuseCount", mesh->getTexturesDiffuse().size());
+    _shaderModels->uniform1i("materialDiffuseCount", mesh->getTexturesDiffuse().size());
     for (const auto & texture : mesh->getTexturesDiffuse()) {
-        texture->bindTextureDiffuse(*_shader, id, index);
+        texture->bindTextureDiffuse(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
     index = 0;
-    _shader->uniform1i("materialSpecularCount", mesh->getTexturesSpecular().size());
+    _shaderModels->uniform1i("materialSpecularCount", mesh->getTexturesSpecular().size());
     for (const auto & texture : mesh->getTexturesSpecular()) {
-        texture->bindTextureSpecular(*_shader, id, index);
+        texture->bindTextureSpecular(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
     index = 0;
-    _shader->uniform1i("materialEmbientCount", mesh->getTexturesEmbient().size());
+    _shaderModels->uniform1i("materialEmbientCount", mesh->getTexturesEmbient().size());
     for (const auto & texture : mesh->getTexturesEmbient()) {
-        texture->bindTextureEmbient(*_shader, id, index);
+        texture->bindTextureEmbient(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
@@ -109,10 +114,14 @@ void Renderer::renderMesh(const std::shared_ptr<Mesh> mesh) const {
     glDrawElements(GL_TRIANGLES  , mesh->getIndicesCount(), GL_UNSIGNED_INT, 0);    
 }
 
+void Renderer::renderLine(const glm::vec3 & firstPoint, const glm::vec3 & secondPoint) const {
+
+}
+
 void Renderer::renderModels(const World & world) const {
     for (auto & model : world.getModels()) {
 
-        _shader->uniformMatrix4("modelModel", model->getModel());
+        _shaderModels->uniformMatrix4("modelModel", model->getModel());
 
         for (auto & mesh : model->getMeshes()) {
             renderMesh(mesh);
@@ -125,7 +134,7 @@ void Renderer::render(const World & world) {
     if (_window->shouldClose()) _window->close();
 
     _window->makeContext();
-    _shader->use();
+    _shaderModels->use();
 
     clearScreen();
     setupCamera(world);
@@ -137,5 +146,6 @@ void Renderer::render(const World & world) {
     updateFps();
 
     _window->swapBuffers();
+    glfwSwapInterval(1);
     glfwPollEvents();
 }  

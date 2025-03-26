@@ -39,3 +39,7 @@ void Keyboard::keyboardCallback(GLFWwindow * window, int key, int scancode, int 
         }
     }
 }
+
+GLFWwindow * Keyboard::getLinkedWindow() {
+    return _window;
+}

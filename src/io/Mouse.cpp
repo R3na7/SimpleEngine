@@ -35,6 +35,9 @@ float Mouse::getOffsetY() {
 
     return yOffset; 
 }
+GLFWwindow * Mouse::getLinkedWindow() {
+    return _window;
+}
 
 
 void Mouse::cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {

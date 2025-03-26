@@ -1,11 +1,11 @@
 #include "ObjectController.hpp"
 
-ObjectController::ObjectController(Object * object, InputObjects * controller)
+ObjectController::ObjectController(std::shared_ptr<Object> object, InputObjects * controller)
 : _object(object), _controller(controller) {
     
 }
 
-void ObjectController::keyboardInputs() {
+void ObjectController::handleKeyboardInput() {
 
     if (_controller->_keyboard->isPressed(GLFW_KEY_W)) {
         auto lookAt = std::move(_object->lookAt());
@@ -65,7 +65,7 @@ void ObjectController::keyboardInputs() {
 
 }
 
-void ObjectController::mouseInputs() {
+void ObjectController::handleMouseInput() {
 
     if (_controller->_mouse->isOffset()) {
         _object->Yaw(_controller->_mouse->getOffsetX());

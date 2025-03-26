@@ -6,6 +6,7 @@
 
 #include "Object.hpp"
 #include "Utilities/Time.hpp"
+#include <memory>
 
 #include "io/InputObjects.hpp"
 
@@ -13,12 +14,12 @@
 
 class ObjectController {
 public:
-    ObjectController(Object * object, InputObjects * controller);
+    ObjectController(std::shared_ptr<Object> object, InputObjects * controller);
 
-    void keyboardInputs();
-    void mouseInputs();
+    void handleKeyboardInput();
+    void handleMouseInput();
 private:
-    Object * _object;
+    std::shared_ptr<Object> _object;
     InputObjects * _controller;
 };
 

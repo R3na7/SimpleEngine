@@ -15,19 +15,17 @@
 
 class World {
 public:
-    World() = delete;
+    //World() = delete;
 
-    World(const std::string & worldName, 
-            const std::vector<Camera *> & cameras, const std::vector<Mesh *> & meshes = {});
+    World(const std::string & worldName = "", 
+            const std::vector<Camera *> & cameras = {}, const std::vector<Mesh *> & meshes = {});
 
-    World(const std::string & fileName);
-
-    std::shared_ptr<Mesh>           addMesh          (const Mesh & mesh);
-    std::shared_ptr<Model>          addModel         (const Model & model);
-    std::shared_ptr<Camera>         addCamera        (const Camera & camera);
-    std::shared_ptr<PointLight>     addPointLight    (const PointLight & pointLight);
-    std::shared_ptr<SpotLight>      addSpotLight     (const SpotLight & spotLight);
-    std::shared_ptr<DirectionLight> addDirectionLight(const DirectionLight & directionLight);
+    std::shared_ptr<Mesh>           add(const Mesh & mesh);
+    std::shared_ptr<Model>          add(const Model & model);
+    std::shared_ptr<Camera>         add(const Camera & camera);
+    std::shared_ptr<PointLight>     add(const PointLight & pointLight);
+    std::shared_ptr<SpotLight>      add(const SpotLight & spotLight);
+    std::shared_ptr<DirectionLight> add(const DirectionLight & directionLight);
 
     void removeMesh          (const std::string & nameMesh);
     void removeCamera        (const std::string & nameCamera);
@@ -40,9 +38,11 @@ public:
 
     void setCurrentCamera(const std::string & cameraName);
 
-    Object *operator[](const std::string & id);
+    std::shared_ptr<Object>       operator[](const std::string & name);
+    std::shared_ptr<Object>       at(const std::string & name);
+    std::shared_ptr<const Object> at(const std::string & name) const;
 
-    const Camera &                                       getCurrentCamera()   const;
+    const std::shared_ptr<Camera> &                      getCurrentCamera()   const;
     const std::vector<std::shared_ptr<Mesh>> &           getMeshes()          const;
     const std::vector<std::shared_ptr<Model>> &          getModels()          const;
     const std::vector<std::shared_ptr<PointLight>> &     getPointLights()     const; 

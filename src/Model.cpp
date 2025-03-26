@@ -9,7 +9,7 @@ Model::Model(const std::vector<std::shared_ptr<Mesh>> & meshes, const std::strin
 : Object(modelName), _meshes(meshes), _texturesDiffuse(texturesDiffuse), _texturesSpecular(texturesSpecular), _texturesEmbient(texturesEmbient) {}
 
 Model::Model(const std::vector<Mesh> & meshes)
-: Object("Model") {
+: Object("model") {
     for (auto & mesh : meshes) {
         _meshes.push_back(std::make_shared<Mesh>(mesh));
     }

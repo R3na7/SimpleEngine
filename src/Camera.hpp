@@ -9,7 +9,7 @@ class Camera : public Object {
 public:
     Camera(const glm::vec3 & position = glm::vec3{0.0f, 0.0f, 0.0f}, 
             float fov = 45, float aspect = 800.0f/600.0f, float zNear = 0.1f, float zFar= 100.0f,
-            const std::string & objectName = "Camera");
+            const std::string & objectName = "camera");
     
 
     glm::mat4 getViewMatrix()       const;

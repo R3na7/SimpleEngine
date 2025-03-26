@@ -33,24 +33,22 @@ Window::Window(int width, int height, const char * title, bool isFullscreen)
 
 Window::Window(int width, int height, const char * title, const Window & share, bool isFullscreen) 
 : _width(width), _height(height), _title(title), _isFullscreen(isFullscreen), _isOpen(true) {
-    
 
     if (_isFullscreen) {
         _window = glfwCreateWindow(_width, _height, _title.c_str(), glfwGetPrimaryMonitor(), share._window);
     } else {
         _window = glfwCreateWindow(_width, _height, _title.c_str(), NULL, share._window);
     }
-    std::cout << "shared\n";
     glfwMakeContextCurrent(share._window);
 
     glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
 
-
-    
-
     _isOpen = true;
     ++_windowCount;
 }
+
+Window::Window(const Window & window)
+: Window(window._width, window._height, window._title.c_str(), window._isFullscreen) {}
 
 bool Window::shouldClose() const {
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) return true;
@@ -97,6 +95,9 @@ void Window::setHeight(int height)            {    _height = height;  }
 void Window::setTitile(const char * title)    {   
     _title = title;    
     glfwSetWindowTitle(_window, _title.c_str());
+}
+void Window::setBackgroundColor (const glm::vec4 & backgroundColor) {
+    _backgroundColor = backgroundColor;
 }
 void Window::setBackgroundColor (float r, float g, float b, float a) {
     _backgroundColor[0] = r;

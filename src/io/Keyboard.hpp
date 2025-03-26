@@ -16,6 +16,8 @@ public:
 
     bool isReleasedNow(int key);
 
+    GLFWwindow * getLinkedWindow();
+
 private:
     GLFWwindow * _window;
     std::array<bool, GLFW_KEY_LAST> _keys = {};

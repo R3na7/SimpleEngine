@@ -9,7 +9,7 @@
 
 class Object {
 public:
-    Object(const std::string & objectName, const glm::vec3 & position = glm::vec3{0.0f, 0.0f, 0.0f},
+    Object(const std::string & objectName = "object", const glm::vec3 & position = glm::vec3{0.0f, 0.0f, 0.0f},
             float pitch = 0.0f, float yaw = -90.0f, glm::mat4x4 model = glm::mat4x4(1.0f));
     Object(const Object & object);
     

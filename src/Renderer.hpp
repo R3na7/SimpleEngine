@@ -10,7 +10,7 @@
 
 class Renderer {
 public:
-    Renderer(Window * window, Shader * shader);
+    Renderer(Window & window);
 
     int getFPS() const;
 
@@ -26,11 +26,13 @@ private:
     int frameCount = 0;
     int fps = 0;
     
-    std::unique_ptr<Window> _window;
-    std::unique_ptr<Shader> _shader;
+    Window * _window;
+    std::unique_ptr<Shader> _shaderModels;
+    
 
     void renderModels(const World & world) const;
     void renderLights(const World & world) const;
+    void renderLine(const glm::vec3 & firstPoint, const glm::vec3 & secondPoint) const;
     void renderMesh(const std::shared_ptr<Mesh> mesh) const;
 };
 

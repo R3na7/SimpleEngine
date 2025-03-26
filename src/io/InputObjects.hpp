@@ -8,7 +8,7 @@
 #include "Mouse.hpp"
 
 struct InputObjects {
-    InputObjects(GLFWwindow * window, Keyboard * keyboard = nullptr, Mouse * mouse = nullptr);
+    InputObjects(Keyboard * keyboard = nullptr, Mouse * mouse = nullptr);
 
     GLFWwindow * _window;
     Keyboard   * _keyboard;

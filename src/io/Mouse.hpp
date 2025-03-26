@@ -17,6 +17,7 @@ public:
     float getOffsetY();
     float getX() const;
     float getY() const;
+    GLFWwindow * getLinkedWindow();
 
     bool isButtonPressed(int button);
     bool isButtonPressedNow(int button);

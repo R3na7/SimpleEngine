@@ -3,19 +3,17 @@
 
 World::World(const std::string & worldName, 
                 const std::vector<Camera *> & cameras, const std::vector<Mesh *> & meshes)
-: _worldName(worldName) {
-
-    for (int i = 0; i < meshes.size(); ++i)  addMesh(*meshes[i]);
-    for (int i = 0; i < cameras.size(); ++i) addCamera(*cameras[i]);
-
-    _currentCamera = _camerasVector[0];
+: _worldName(worldName), _currentCamera(nullptr) {
+    if (!cameras.empty()) {
+        for (int i = 0; i < cameras.size(); ++i) add(*cameras[i]);
+        _currentCamera = _camerasVector[0];
+    } else {
+        add(Camera());
+        _currentCamera = _camerasVector[0];
+    }
 }
 
-World::World(const std::string & fileName) {
-    // coming soon...
-}
-
-std::shared_ptr<Mesh> World::addMesh(const Mesh & mesh) {
+std::shared_ptr<Mesh> World::add(const Mesh & mesh) {
     std::string name = mesh.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = mesh.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -29,8 +27,7 @@ std::shared_ptr<Mesh> World::addMesh(const Mesh & mesh) {
     _objectsMap[name] = _meshesVector[_meshesVector.size() - 1];
     return _meshesVector[_meshesVector.size() - 1];
 }
-
-std::shared_ptr<Model> World::addModel(const Model & model) {
+std::shared_ptr<Model> World::add(const Model & model) {
     std::string name = model.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = model.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -44,8 +41,7 @@ std::shared_ptr<Model> World::addModel(const Model & model) {
     _objectsMap[name] = _modelVector[_modelVector.size() - 1];
     return _modelVector[_modelVector.size() - 1];
 }
-
-std::shared_ptr<Camera> World::addCamera(const Camera & camera) {
+std::shared_ptr<Camera> World::add(const Camera & camera) {
     std::string name = camera.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = camera.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -59,8 +55,7 @@ std::shared_ptr<Camera> World::addCamera(const Camera & camera) {
     _objectsMap[name] = _camerasVector[_camerasVector.size() - 1];
     return _camerasVector[_camerasVector.size() - 1];
 }
-
-std::shared_ptr<PointLight> World::addPointLight(const PointLight & pointLight = PointLight()) {
+std::shared_ptr<PointLight> World::add(const PointLight & pointLight = PointLight()) {
     std::string name = pointLight.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = pointLight.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -74,8 +69,7 @@ std::shared_ptr<PointLight> World::addPointLight(const PointLight & pointLight =
     _objectsMap[name] = _pointLightsVector[_pointLightsVector.size() - 1];
     return _pointLightsVector[_pointLightsVector.size() - 1];
 }
-
-std::shared_ptr<SpotLight> World::addSpotLight(const SpotLight & spotLight = SpotLight()) {
+std::shared_ptr<SpotLight> World::add(const SpotLight & spotLight = SpotLight()) {
     std::string name = spotLight.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = spotLight.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -89,8 +83,7 @@ std::shared_ptr<SpotLight> World::addSpotLight(const SpotLight & spotLight = Spo
     _objectsMap[name] = _spotLightsVector[_spotLightsVector.size() - 1];
     return _spotLightsVector[_spotLightsVector.size() - 1];
 }
-
-std::shared_ptr<DirectionLight> World::addDirectionLight(const DirectionLight & directionLight = DirectionLight{}) {
+std::shared_ptr<DirectionLight> World::add(const DirectionLight & directionLight) {
     std::string name = directionLight.getName();
     if (_countDuplicated.find(name) != _countDuplicated.end()) {
         name = directionLight.getName() + "_" + std::to_string(_countDuplicated[name]);
@@ -102,7 +95,6 @@ std::shared_ptr<DirectionLight> World::addDirectionLight(const DirectionLight & 
     _directionLightsVector[_directionLightsVector.size() - 1]->setName(name);
     return _directionLightsVector[_directionLightsVector.size() - 1];
 }
-
 
 void World::removeMesh(const std::string & nameMesh) {
     if (_countDuplicated[nameMesh] == 0) {
@@ -123,7 +115,6 @@ void World::removeMesh(const std::string & nameMesh) {
         }  
     }
 }
-
 void World::removeCamera(const std::string & nameCamera) {
     if (_currentCamera->getName() == nameCamera) {
         std::cout << "The camera " << nameCamera << " is currently in use and cannot be deleted.";
@@ -166,7 +157,6 @@ void World::removePointLight(const std::string & namePointLight) {
         }  
     }
 }
-
 void World::removeSpotLight(const std::string & nameSpotLight) {
     if (_countDuplicated[nameSpotLight] == 0) {
         std::cout << "object " << nameSpotLight << " does not exist in the world: " << _worldName << '\n';
@@ -186,7 +176,6 @@ void World::removeSpotLight(const std::string & nameSpotLight) {
         }  
     }
 }
-
 void World::removeDirectionLight(const std::string & nameDirectionLight) {
     if (_countDuplicated[nameDirectionLight] == 0) {
         std::cout << "object " << nameDirectionLight << " does not exist in the world: " << _worldName << '\n';
@@ -219,9 +208,25 @@ void World::setCurrentCamera(const std::string & cameraName) {
     }   
 }
 
-Object * World::operator[](const std::string & id) {    return _objectsMap[id].get(); }
+std::shared_ptr<Object>       World::operator[](const std::string & id) {    return _objectsMap[id]; }
 
-const Camera &                                       World::getCurrentCamera()   const {    return *_currentCamera;        }
+std::shared_ptr<Object> World::at(const std::string& name) {
+    try {
+        return _objectsMap.at(name);
+    } catch (const std::out_of_range&) {
+        throw std::out_of_range("Object with name '" + name + "' not found in world");
+    }
+}
+
+std::shared_ptr<const Object> World::at(const std::string& name) const {
+    try {
+        return _objectsMap.at(name);
+    } catch (const std::out_of_range&) {
+        throw std::out_of_range("Object with name '" + name + "' not found in world");
+    }
+}
+
+const std::shared_ptr<Camera> &                      World::getCurrentCamera()   const {    return  _currentCamera;        }
 const std::vector<std::shared_ptr<Mesh>> &           World::getMeshes()          const {    return _meshesVector;          }
 const std::vector<std::shared_ptr<Model>> &          World::getModels()          const {    return _modelVector;           }
 const std::vector<std::shared_ptr<PointLight>> &     World::getPointLights()     const {    return _pointLightsVector;     }
@@ -240,5 +245,5 @@ std::shared_ptr<DirectionLight> World::getDirectionLight(const std::string& dirL
         return *it;
     }
 
-    return addDirectionLight();
+    return add(DirectionLight());
 }

@@ -12,11 +12,11 @@
 
 class Window final {
 public:
-    Window(int width, int height, const char * title, bool isFullscreen = false);
+    Window(int width, int height, const char * title = "", bool isFullscreen = false);
 
     Window(int width, int height, const char * title, const Window & share, bool isFullscreen = false);
 
-    Window(const Window &) = delete;
+    Window(const Window & window);
 
     bool shouldClose() const;
 
@@ -38,7 +38,8 @@ public:
     void setWidht           (int width);
     void setTitile          (const char * title);
     void setHeight          (int height);
-    void setBackgroundColor (float r, float g, float b, float a);
+    void setBackgroundColor (float r, float g = 1.0f, float b = 1.0f, float a = 1.0f);
+    void setBackgroundColor (const glm::vec4 & backgroundColor);
     
 
     bool isFullscreen () const;
@@ -53,7 +54,7 @@ private:
 
     GLFWwindow *_window;
     
-    float _backgroundColor[4] {0.0f, 0.0f, 0.0f, 1.0f};
+    glm::vec4 _backgroundColor {0.0f, 0.0f, 0.0f, 1.0f};
 
     bool _isFullscreen;
     bool _isOpen;

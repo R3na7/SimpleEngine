@@ -84,8 +84,6 @@ void main()
       result += CalcDirectionLight(directionLights[i]);
    }
 
-   
-
    FragColor = vec4(result, 1.0);
 }
 
@@ -131,49 +129,40 @@ vec3 CalcPointLight(PointLight light) {
 }
 vec3 CalcSpotLight(SpotLight light) {
    vec3 lightDir = normalize(light._position - FragPos);
+   
+   float theta = dot(lightDir, -light._direction);
+   float epsilon = light._cutOff - light._outerCutOff;
+   float intensity = clamp((theta - light._outerCutOff) / epsilon, 0.0, 1.0);
+   
+   vec3 ambient = vec3(0.0);
+   vec3 diffuse = vec3(0.0);
+   vec3 specular = vec3(0.0);
+   vec3 emission = vec3(0.0);
 
    float diff = max(dot(lightDir, normalize(Normal)), 0.0);
 
-   vec3 viewDir = normalize(viewPos - FragPos);
-   vec3 reflectDir = normalize(reflect(-lightDir, normalize(Normal)));
-   
-   vec3 ambient  = vec3(0.0);
-   vec3 diffuse  = vec3(0.0);
-   vec3 specular = vec3(0.0);
-   vec3 emission  = vec3(0.0);
-
-   if (dot(-light._direction, lightDir) > light._outerCutOff) {
-
+   if (theta > light._outerCutOff && diff > 0.0) {
+      vec3 viewDir = normalize(viewPos - FragPos);
+      vec3 reflectDir = reflect(-lightDir, normalize(Normal));
+      
       calcAmbient(ambient, diffuse, light._ambient, light._diffuse, diff);
       calcSpecular(specular, light._specular, reflectDir, viewDir);
       calcEmission(emission);
-
+      
+      ambient += light._ambient * vec3(ourColor);
+      diffuse += light._diffuse * diff * vec3(ourColor);
+      float spec = pow(max(dot(reflectDir, viewDir), 0.0), ourShininess);
+      specular += light._specular * spec * vec3(ourColor);
 
       float dist = length(light._position - FragPos);
-      float attenuation = 1.0 / (light._constant + 
-                                 light._linear * dist + 
-                                 light._quadratic * (dist * dist));
-
-      ambient *= attenuation;
-      diffuse *= attenuation;
-      specular*= attenuation;
-
-      float theta = dot(-light._direction, lightDir);
-      float epsilon = max(light._cutOff - light._outerCutOff, 0.001);
-      float intensity = clamp((theta - light._outerCutOff) / epsilon, 0.0, 1.0);
-
-
-      ambient *= intensity;
-      diffuse *= intensity;
-      specular*= intensity;
-   }
-
-   ambient  += light._ambient *   vec3(ourColor);
-   diffuse  += light._diffuse * diff *  vec3(ourColor);
-   float spec = pow(max(dot(reflectDir, viewDir), 0.0), ourShininess);
-   specular += light._specular * spec * vec3(ourColor);
-
-   return (ambient + diffuse + specular + emission);
+      float attenuation = 1.0 / (light._constant + light._linear * dist + light._quadratic * (dist * dist));
+      
+      ambient *= attenuation * intensity;
+      diffuse *= attenuation * intensity;
+      specular *= attenuation * intensity;
+    }
+    
+    return (ambient + diffuse + specular + emission);
 }
 vec3 CalcDirectionLight(DirectionLight light) {
    

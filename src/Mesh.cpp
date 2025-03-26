@@ -16,10 +16,10 @@ Mesh::Mesh(const std::vector<Vertex> & vertices, const std::vector<unsigned int>
     
 }
 
-Mesh::Mesh(const Mesh & mesh)
-: Object(mesh), _vertices(mesh._vertices), _indices(mesh._indices), 
-                _texturesDiffuse(mesh._texturesDiffuse), _texturesSpecular(mesh._texturesSpecular), _texturesEmbient(mesh._texturesEmbient),
-                _color(mesh._color), _VAO(mesh._VAO), _VBO(mesh._VBO), _EBO(mesh._EBO) {
+Mesh::Mesh(const Mesh & other)
+: Object(other), _vertices(other._vertices), _indices(other._indices), 
+                _texturesDiffuse(other._texturesDiffuse), _texturesSpecular(other._texturesSpecular), _texturesEmbient(other._texturesEmbient),
+                _color(other._color) {
     vaoInit();
     vboInit();
     eboInit();
@@ -29,7 +29,15 @@ Mesh::Mesh(const Mesh & mesh)
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(2);
-    
+}
+
+Mesh::Mesh(Mesh && other)
+: Object(other), _vertices(other._vertices), _indices(other._indices), 
+                _texturesDiffuse(other._texturesDiffuse), _texturesSpecular(other._texturesSpecular), _texturesEmbient(other._texturesEmbient),
+                _color(other._color), _VAO(other._VAO), _VBO(other._VBO), _EBO(other._EBO) {
+    other._VAO = 0;
+    other._VBO = 0;
+    other._EBO = 0;
 }
 
 
@@ -125,61 +133,62 @@ void Mesh::eboInit() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * _indices.size(), _indices.begin().base(), GL_STATIC_DRAW);
 }
 
-Mesh Mesh::getCube(const std::string & objectName, const glm::vec4 & color) {
+std::shared_ptr<Mesh> Mesh::getCube(const glm::vec4 & color, const std::string & objectName) {
+    constexpr float HS = 0.5f; // Half size of the cube
 
-    std::vector<Vertex> cube_vertexs {
-        Vertex({-0.5f, -0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  0.0f,  0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  1.0f,  0.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  1.0f,  1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f},  {0.0f,  0.0f}, {1.0f,  0.0f,  1.0f}),
+    std::vector<Vertex> vertices = {
+        // Front face (Z+)
+        Vertex({-HS, -HS,  HS}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}),
+        Vertex({ HS, -HS,  HS}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}),
+        Vertex({ HS,  HS,  HS}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}),
+        Vertex({-HS,  HS,  HS}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}),
 
-        // Задняя грань
-        Vertex({-0.5f, -0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  0.0f,  0.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  1.0f,  0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  1.0f,  1.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f},  {0.0f,  0.0f}, {-1.0f,  0.0f,  1.0f}),
+        // Back face (Z-)
+        Vertex({-HS, -HS, -HS}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}),
+        Vertex({ HS, -HS, -HS}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}),
+        Vertex({ HS,  HS, -HS}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}),
+        Vertex({-HS,  HS, -HS}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f}),
 
-        // Левая грань
-        Vertex({-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f},  {0.0f,  0.0f,  0.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f},  {0.0f,  1.0f,  0.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f},  {0.0f,  1.0f,  1.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f},  {0.0f,  0.0f,  1.0f}),
+        // Left face (X-)
+        Vertex({-HS, -HS, -HS}, {0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}),
+        Vertex({-HS, -HS,  HS}, {1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}),
+        Vertex({-HS,  HS,  HS}, {1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}),
+        Vertex({-HS,  HS, -HS}, {0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}),
 
-        // Правая грань
-        Vertex({0.5f, -0.5f, -0.5f},  {1.0f,  0.0f},  {0.0f,  0.0f,  0.0f}),
-        Vertex({0.5f,  0.5f, -0.5f},  {1.0f,  0.0f},  {0.0f,  1.0f,  0.0f}),
-        Vertex({0.5f,  0.5f,  0.5f},  {1.0f,  0.0f},  {0.0f,  1.0f,  1.0f}),
-        Vertex({0.5f, -0.5f,  0.5f},  {1.0f,  0.0f},  {0.0f,  0.0f,  1.0f}),
+        // Right face (X+)
+        Vertex({ HS, -HS,  HS}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}),
+        Vertex({ HS, -HS, -HS}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}),
+        Vertex({ HS,  HS, -HS}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}),
+        Vertex({ HS,  HS,  HS}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}),
 
-        // Верхняя грань
-        Vertex({-0.5f,  0.5f, -0.5f},  {0.0f,  1.0f},  {0.0f,  0.0f,  0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f},  {0.0f,  1.0f},  {0.0f,  1.0f,  0.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f},  {0.0f,  1.0f},  {0.0f,  1.0f,  1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f},  {0.0f,  1.0f},  {0.0f,  0.0f,  1.0f}),
+        // Top face (Y+)
+        Vertex({-HS,  HS,  HS}, {0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
+        Vertex({ HS,  HS,  HS}, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
+        Vertex({ HS,  HS, -HS}, {1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}),
+        Vertex({-HS,  HS, -HS}, {0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}),
 
-        // Нижняя грань
-        Vertex({-0.5f, -0.5f, -0.5f},  {0.0f, -1.0f},  {0.0f,  0.0f,  0.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f},  {0.0f, -1.0f},  {0.0f,  1.0f,  0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f},  {0.0f, -1.0f},  {0.0f,  1.0f,  1.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f},  {0.0f, -1.0f},  {0.0f,  0.0f,  1.0f})
+        // Bottom face (Y-)
+        Vertex({-HS, -HS, -HS}, {0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}),
+        Vertex({ HS, -HS, -HS}, {1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}),
+        Vertex({ HS, -HS,  HS}, {1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}),
+        Vertex({-HS, -HS,  HS}, {0.0f, 1.0f}, {0.0f, -1.0f, 0.0f})
     };
 
-    std::vector<unsigned int> cube_indeces = {
-        // Передняя грань
-        0, 1, 2, 0, 2, 3,
-        // Задняя грань
-        4, 5, 6, 4, 6, 7,
-        // Левая грань
+    std::vector<unsigned int> indices = {
+        // Front
+        0, 1, 2,  0, 2, 3,
+        // Back
+        4, 5, 6,  4, 6, 7,
+        // Left
         8, 9, 10, 8, 10, 11,
-        // Правая грань
+        // Right
         12, 13, 14, 12, 14, 15,
-        // Верхняя грань
+        // Top
         16, 17, 18, 16, 18, 19,
-        // Нижняя грань
+        // Bottom
         20, 21, 22, 20, 22, 23
     };
-
-    return Mesh(cube_vertexs, cube_indeces, color, objectName);
+    return std::make_shared<Mesh>(Mesh(vertices, indices, color, objectName));
 }
 
 Mesh::~Mesh() {   

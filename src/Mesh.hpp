@@ -4,7 +4,7 @@
 
 #include "Object.hpp"
 #include "Texture.hpp"
-
+#include <memory>
 
 struct Vertex {
 
@@ -31,13 +31,12 @@ struct Vertex {
 class Mesh : public Object {
 public:
 
-    Mesh(const std::vector<Vertex> & vertices, const std::vector<unsigned int> & indices, const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, std::string objectName = "Mesh");
+    Mesh(const std::vector<Vertex> & vertices, const std::vector<unsigned int> & indices, 
+        const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, std::string objectName = "mesh");
 
     Mesh(const Mesh & mesh);
 
-    Mesh (Mesh &&) noexcept = default;
-
-    Mesh & operator=(Mesh && mesh) noexcept = default;
+    Mesh (Mesh &&);
 
     void bindVertexArray() const;
 
@@ -65,7 +64,8 @@ public:
     const std::vector<Texture *> & getTexturesSpecular() const;
     const std::vector<Texture *> & getTexturesEmbient()  const;
 
-    static Mesh getCube(const std::string & objectName, const glm::vec4 & color);
+    static std::shared_ptr<Mesh> getCube(const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, const std::string & objectName = "cube");
+    
 
     ~Mesh();
 private:

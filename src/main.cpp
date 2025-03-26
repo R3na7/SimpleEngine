@@ -17,62 +17,62 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    Window window(800, 600, "window - red - container");
+    Window window(800, 600);
     window.setBackgroundColor(0.2f, 0.2f, 0.2f, 1.0f);
-
-    Shader shader("assets/shaders/vertex.vs", "assets/shaders/fragment.fs");
-
-    Renderer renderer(&window, &shader);
-
+    
+    Renderer renderer(window);
+    
     Keyboard keyboard(window.getGLFWWindow());
     Mouse mouse(window.getGLFWWindow());
-    InputObjects controllers(window.getGLFWWindow(), &keyboard, &mouse);
+    InputObjects controllers(&keyboard, &mouse);
 
-    Camera camera;
-
-    Mesh cube = Mesh::getCube("cube", {0.1f, 0.9f, 0.1f, 1.0f});
-
-    World world("world", {&camera});
-
-    Model green_cube({std::make_shared<Mesh>(cube)}, "green");
-    cube.setColor({0.1f, 0.1f, 0.9f, 1.0f});
-    Model blue_cube({std::make_shared<Mesh>(cube)}, "blue");
+    World world;
     
-    Model backpack = ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx");
-    backpack.ApplyTextureDiffuse("assets/models/backpack/diffuse.jpg");
-    backpack.ApplyTextureSpecular("assets/models/backpack/specular.jpg");
+    auto camera = world.add(Camera());
 
-    world.addModel(green_cube);
-    world.addModel(blue_cube);
-    world.addModel(backpack);
+    auto green_cube = world.add({{Mesh::getCube({0.1f, 0.9f, 0.1f, 1.0f})}, "green"});
 
-    DirectionLight dirlight;
-    dirlight.setName("dirlight");
-    world.addDirectionLight(dirlight);
+    auto blue_cube = world.add({{Mesh::getCube({0.1f, 0.1f, 0.9f, 1.0f})}, "blue"});
+    blue_cube->scale({0.1f, 0.1f, 0.1f});
 
-    world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
-    world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
+    auto spotLight = world.add(SpotLight());
 
-    ObjectController camera_controller(world[camera.getName()], &controllers);
+    auto backpack = world.add(ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx"));
+    backpack->ApplyTextureDiffuse("assets/models/backpack/diffuse.jpg");
+    backpack->ApplyTextureSpecular("assets/models/backpack/specular.jpg");
+    
+    
+    //world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
+    //world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
+    //world["blue"]->scale({0.1f, 0.1f, 0.1f});
+    
+    ObjectController camera_controller(world.getCurrentCamera(), &controllers);
+    ObjectController spotLight_controller(spotLight, &controllers);
+    ObjectController backpack_controller(backpack, &controllers);
 
-
-
+    world.removeMesh(green_cube->getName());
+    
     glfwSetInputMode(window.getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     while (Window::havesWindow()) {
         
-        camera_controller.mouseInputs();
-        camera_controller.keyboardInputs();
+        if (mouse.isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
+            spotLight_controller.handleKeyboardInput();
+            spotLight_controller.handleMouseInput();
+            blue_cube->translate_to_point(spotLight->position());
+        } else if (mouse.isButtonPressed(GLFW_MOUSE_BUTTON_2)) {
+            backpack_controller.handleKeyboardInput();
+            backpack_controller.handleMouseInput();
+        } else {
+            camera_controller.handleMouseInput();
+            camera_controller.handleKeyboardInput();
+        }
         
-        world.getDirectionLight("dirlight")->setDirection({sin(glfwGetTime()), 0.8f, sin(glfwGetTime())});
-
-
 
 
         renderer.render(world);
         window.setTitile(std::to_string(renderer.getFPS()).c_str());
 
-        glfwSwapInterval(1);
-        glfwPollEvents();
+
         Time::update();
     }
     glfwTerminate();
