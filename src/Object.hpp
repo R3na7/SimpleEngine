@@ -28,13 +28,12 @@ public:
     void Pitch(float pitch);
     void Yaw  (float yaw);
 
-    void setname(const std::string & objectName);
+    void setName(const std::string & objectName);
 
     glm::vec3   position() const;
     float       getPitch() const;
     float       getYaw  () const; 
     std::string getName () const;
-    std::string getId   () const;
     glm::vec3   lookAt  () const;
     glm::vec3   left    () const;
     glm::vec3   up      () const;

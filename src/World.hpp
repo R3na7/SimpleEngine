@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <algorithm>
 
 #include "Mesh.hpp"
 #include "Model.hpp"
@@ -13,25 +14,32 @@
 #include "Lighting/SpotLight.hpp"
 #include "Lighting/DirectionLight.hpp"
 
+template <typename T>
+concept WorldObjectType = 
+    std::is_same_v<std::remove_cvref_t<T>, Mesh> ||
+    std::is_same_v<std::remove_cvref_t<T>, Model> ||
+    std::is_same_v<std::remove_cvref_t<T>, PointLight> ||
+    std::is_same_v<std::remove_cvref_t<T>, SpotLight> ||
+    std::is_same_v<std::remove_cvref_t<T>, DirectionLight> ||
+    std::is_same_v<std::remove_cvref_t<T>, Camera>;
+
 class World {
 public:
-    //World() = delete;
 
     World(const std::string & worldName = "", 
             const std::vector<Camera *> & cameras = {}, const std::vector<Mesh *> & meshes = {});
 
-    std::shared_ptr<Mesh>           add(const Mesh & mesh);
-    std::shared_ptr<Model>          add(const Model & model);
-    std::shared_ptr<Camera>         add(const Camera & camera);
-    std::shared_ptr<PointLight>     add(const PointLight & pointLight);
-    std::shared_ptr<SpotLight>      add(const SpotLight & spotLight);
-    std::shared_ptr<DirectionLight> add(const DirectionLight & directionLight);
+    template <WorldObjectType T>
+    std::shared_ptr<T> add(const T& obj);
 
-    void removeMesh          (const std::string & nameMesh);
-    void removeCamera        (const std::string & nameCamera);
-    void removePointLight    (const std::string & namePointLight);
-    void removeSpotLight     (const std::string & nameSpotLight);
-    void removeDirectionLight(const std::string & nameDirectionLight);
+    template<WorldObjectType T>
+    void remove(T & obj);
+
+    template<WorldObjectType T>
+    void remove(const std::string& name);
+
+    template<WorldObjectType T>
+    void remove(const std::shared_ptr<T> & obj);
 
     bool saveWorld();
     bool loadWorld();
@@ -57,14 +65,93 @@ private:
 
     std::vector<std::shared_ptr<Camera>>         _camerasVector;
     std::vector<std::shared_ptr<Mesh>>           _meshesVector;
-    std::vector<std::shared_ptr<Model>>          _modelVector;
+    std::vector<std::shared_ptr<Model>>          _modelsVector;
     std::vector<std::shared_ptr<PointLight>>     _pointLightsVector;
     std::vector<std::shared_ptr<SpotLight>>      _spotLightsVector;
     std::vector<std::shared_ptr<DirectionLight>> _directionLightsVector;
-
-    std::unordered_map<std::string, int> _countDuplicated;
     
     std::shared_ptr<Camera> _currentCamera;
+
+    int numberSuchNames(const std::string & name) const;
 };
+
+template <WorldObjectType T>
+std::shared_ptr<T> World::add(const T& obj) {
+    int suffix = numberSuchNames(obj.getName());
+    std::string newName = obj.getName();
+
+    if (suffix != 0) newName += "_" + std::to_string(suffix); 
+
+    auto newObj = std::make_shared<T>(obj);
+    newObj->setName(newName);
+    
+    if constexpr (std::is_same_v<T, Mesh>) {
+        _meshesVector.push_back(newObj);
+        _objectsMap[newName] = newObj;
+    } else if constexpr (std::is_same_v<T, Model>) {
+        _modelsVector.push_back(newObj);
+        _objectsMap[newName] = newObj;
+    } else if constexpr (std::is_same_v<T, Camera>) {
+        _camerasVector.push_back(newObj);
+        _objectsMap[newName] = newObj;
+    } else if constexpr (std::is_same_v<T, PointLight>) {
+        _pointLightsVector.push_back(newObj);
+        _objectsMap[newName] = newObj;
+    } else if constexpr (std::is_same_v<T, SpotLight>) {
+        _spotLightsVector.push_back(newObj);
+        _objectsMap[newName] = newObj;
+    } else if constexpr (std::is_same_v<T, DirectionLight>) {
+        _directionLightsVector.push_back(newObj);
+    } else {
+        std::cout << "Unsupported type for World::add. Object: " + obj.getName();
+        return nullptr;
+    }
+    
+    return newObj;
+}
+
+template<WorldObjectType T>
+void World::remove(const std::string& name) {
+    auto& targetVector = [this]() -> auto& {
+        if constexpr (std::is_same_v<T, Mesh>) {
+            return _meshesVector;
+        } else if constexpr (std::is_same_v<T, Model>) {
+            return _modelsVector;
+        } else if constexpr (std::is_same_v<T, Camera>) {
+            return _camerasVector;
+        } else if constexpr (std::is_same_v<T, PointLight>) {
+            return _pointLightsVector;
+        } else if constexpr (std::is_same_v<T, SpotLight>) {
+            return _spotLightsVector;
+        } else if constexpr (std::is_same_v<T, DirectionLight>) {
+            return _directionLightsVector;
+        }
+    }();
+
+    targetVector.erase(
+        std::remove_if(targetVector.begin(), targetVector.end(),
+            [&name](const std::shared_ptr<T>& obj) {
+                return obj->getName() == name;
+            }),
+        targetVector.end()
+    );
+
+    if constexpr (!std::is_same_v<T, DirectionLight>) {
+        _objectsMap.erase(name);
+    }
+}
+
+template<WorldObjectType T>
+void World::remove(T& obj) {
+    remove<T>(obj.getName());
+}
+
+template<WorldObjectType T>
+void World::remove(const std::shared_ptr<T> & obj) {
+    remove<T>(obj.getName());
+}
+
+
+
 
 #endif

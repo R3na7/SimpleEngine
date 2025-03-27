@@ -28,40 +28,29 @@ int main() {
 
     World world;
     
-    auto camera = world.add(Camera());
+    auto camera = world.add(Camera()); 
 
-    auto green_cube = world.add({{Mesh::getCube({0.1f, 0.9f, 0.1f, 1.0f})}, "green"});
+    auto green_cube = world.add(Model::getCube({0.1f, 0.9f, 0.1f, 1.0f}, 0.2f, "green"));
+    auto blue_cube = world.add(Model::getCube({0.1f, 0.1f, 0.9f, 1.0f}, 0.2f, "blue"));
 
-    auto blue_cube = world.add({{Mesh::getCube({0.1f, 0.1f, 0.9f, 1.0f})}, "blue"});
-    blue_cube->scale({0.1f, 0.1f, 0.1f});
-
-    auto spotLight = world.add(SpotLight());
-
-    auto backpack = world.add(ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx"));
-    backpack->ApplyTextureDiffuse("assets/models/backpack/diffuse.jpg");
-    backpack->ApplyTextureSpecular("assets/models/backpack/specular.jpg");
+    auto directionLight = world.add(DirectionLight());
     
-    
-    //world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
-    //world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
-    //world["blue"]->scale({0.1f, 0.1f, 0.1f});
+    world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
+    world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
     
     ObjectController camera_controller(world.getCurrentCamera(), &controllers);
-    ObjectController spotLight_controller(spotLight, &controllers);
-    ObjectController backpack_controller(backpack, &controllers);
-
-    world.removeMesh(green_cube->getName());
+    ObjectController greenCubeController(green_cube, &controllers);
+    ObjectController blueCubeController(blue_cube, &controllers);
     
     glfwSetInputMode(window.getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     while (Window::havesWindow()) {
         
         if (mouse.isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
-            spotLight_controller.handleKeyboardInput();
-            spotLight_controller.handleMouseInput();
-            blue_cube->translate_to_point(spotLight->position());
+            greenCubeController.handleKeyboardInput();
+            greenCubeController.handleMouseInput();
         } else if (mouse.isButtonPressed(GLFW_MOUSE_BUTTON_2)) {
-            backpack_controller.handleKeyboardInput();
-            backpack_controller.handleMouseInput();
+            blueCubeController.handleKeyboardInput();
+            blueCubeController.handleMouseInput();
         } else {
             camera_controller.handleMouseInput();
             camera_controller.handleKeyboardInput();

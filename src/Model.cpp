@@ -8,13 +8,6 @@ Model::Model(const std::vector<std::shared_ptr<Mesh>> & meshes, const std::strin
                     const std::vector<std::shared_ptr<Texture>> & texturesEmbient)
 : Object(modelName), _meshes(meshes), _texturesDiffuse(texturesDiffuse), _texturesSpecular(texturesSpecular), _texturesEmbient(texturesEmbient) {}
 
-Model::Model(const std::vector<Mesh> & meshes)
-: Object("model") {
-    for (auto & mesh : meshes) {
-        _meshes.push_back(std::make_shared<Mesh>(mesh));
-    }
-}
-
 void Model::ApplyTextureDiffuse(const std::string & textureDiffuseName) {
     for (int i = 0; i < _texturesDiffuse.size(); ++i) {
         if (*_texturesDiffuse[i].get() == textureDiffuseName) {
@@ -76,3 +69,8 @@ const std::vector<std::shared_ptr<Mesh>> &    Model::getMeshes()           const
 const std::vector<std::shared_ptr<Texture>> & Model::getTexturesDiffuse()  const {   return _texturesDiffuse;  }
 const std::vector<std::shared_ptr<Texture>> & Model::getTexturesSpecular() const {   return _texturesSpecular; }
 const std::vector<std::shared_ptr<Texture>> & Model::getTexturesEmbient()  const {   return _texturesEmbient;  }
+
+
+Model Model::getCube(const glm::vec4 & color, float size, const std::string & objectName) {
+    return {{Mesh::getCube(color, size, "cube")}, objectName};
+}

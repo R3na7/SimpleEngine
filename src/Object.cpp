@@ -51,7 +51,7 @@ void Object::Yaw(float yaw) {
     _yaw += yaw;        
 }
 
-void Object::setname(const std::string & objectName) {
+void Object::setName(const std::string & objectName) {
     _objectName = objectName;
 }
 

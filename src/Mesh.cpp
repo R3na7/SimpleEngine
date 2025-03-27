@@ -32,7 +32,7 @@ Mesh::Mesh(const Mesh & other)
 }
 
 Mesh::Mesh(Mesh && other)
-: Object(other), _vertices(other._vertices), _indices(other._indices), 
+: Object(other), _vertices(std::move(other._vertices)), _indices(std::move(other._indices)), 
                 _texturesDiffuse(other._texturesDiffuse), _texturesSpecular(other._texturesSpecular), _texturesEmbient(other._texturesEmbient),
                 _color(other._color), _VAO(other._VAO), _VBO(other._VBO), _EBO(other._EBO) {
     other._VAO = 0;
@@ -133,8 +133,8 @@ void Mesh::eboInit() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * _indices.size(), _indices.begin().base(), GL_STATIC_DRAW);
 }
 
-std::shared_ptr<Mesh> Mesh::getCube(const glm::vec4 & color, const std::string & objectName) {
-    constexpr float HS = 0.5f; // Half size of the cube
+std::shared_ptr<Mesh> Mesh::getCube(const glm::vec4 & color, float size, const std::string & objectName) {
+    float HS = size; // Half size of the cube
 
     std::vector<Vertex> vertices = {
         // Front face (Z+)

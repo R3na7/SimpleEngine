@@ -64,7 +64,8 @@ public:
     const std::vector<Texture *> & getTexturesSpecular() const;
     const std::vector<Texture *> & getTexturesEmbient()  const;
 
-    static std::shared_ptr<Mesh> getCube(const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, const std::string & objectName = "cube");
+    static std::shared_ptr<Mesh> getCube(const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, float size = 0.5f,
+        const std::string & objectName = "cube");
     
 
     ~Mesh();

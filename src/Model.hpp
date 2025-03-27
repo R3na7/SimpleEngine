@@ -11,8 +11,6 @@ public:
                 const std::vector<std::shared_ptr<Texture>> & texturesSpecular = {},
                     const std::vector<std::shared_ptr<Texture>> & texturesEmbient = {});
 
-    Model(const std::vector<Mesh> & meshes);
-
     void ApplyTextureDiffuse(const std::string & textureDiffuseName);
     void ApplyTextureSpecular(const std::string & textureSpecularName);
     void ApplyTextureAmbient(const std::string & textureEmbientName);
@@ -21,6 +19,8 @@ public:
     const std::vector<std::shared_ptr<Texture>> & getTexturesDiffuse() const;
     const std::vector<std::shared_ptr<Texture>> & getTexturesSpecular() const;
     const std::vector<std::shared_ptr<Texture>> & getTexturesEmbient() const;
+
+    static Model getCube(const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, float size = 0.5f, const std::string & objectName = "cube");
 
 private:
     std::vector<std::shared_ptr<Mesh>> _meshes;
