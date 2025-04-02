@@ -18,12 +18,13 @@ public:
     void loadTexture(const std::string & filename);
 
     std::string getFilename() const;
+    bool isHDR() const;
 
     void setShininess(float shininess);
 
     void bindTextureDiffuse(const Shader & shader, unsigned int id, int index) const;
     void bindTextureSpecular(const Shader & shader, unsigned int id, int index) const;
-    void bindTextureEmbient(const Shader & shader, unsigned int id, int index) const;
+    void bindTextureAmbient(const Shader & shader, unsigned int id, int index) const;
 
 
     bool operator==(const std::string & filename) const;
@@ -32,7 +33,7 @@ public:
     ~Texture();
 private:
     std::string _filename = "";
-
+    bool _isHDR;
 
     unsigned int _texture = 0;
 

@@ -106,7 +106,7 @@ void Renderer::renderMesh(const std::shared_ptr<Mesh> mesh) const {
     index = 0;
     _shaderModels->uniform1i("materialEmbientCount", mesh->getTexturesEmbient().size());
     for (const auto & texture : mesh->getTexturesEmbient()) {
-        texture->bindTextureEmbient(*_shaderModels, id, index);
+        texture->bindTextureAmbient(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }

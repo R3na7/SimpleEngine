@@ -35,6 +35,8 @@ int main() {
 
     auto directionLight = world.add(DirectionLight());
     
+    auto backpack = world.add(ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx"));
+
     world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
     world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
     

@@ -240,37 +240,39 @@ void calcAmbient(out vec3 ambient, out vec3 diffuse, out vec3 light_ambient, out
 void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDir, out vec3 viewDir) {
    for (int i = 0; i < materialSpecularCount; ++i) {
       float spec = pow(max(dot(reflectDir, viewDir), 0.0), material._shininess[i]);
+      float specularStrength = 0.0;
 
-      if (i == 0) {
-         specular += light_specular * spec * vec3(texture(material._specular[0], TexCoord));
+      if (i == 0) {  
+         specularStrength = texture(material._specular[0], TexCoord).r;
       }
       else if (i == 1) {
-         specular += light_specular * spec * vec3(texture(material._specular[1], TexCoord));
+         specularStrength = texture(material._specular[1], TexCoord).r;
       }
       else if (i == 2) {
-         specular += light_specular * spec * vec3(texture(material._specular[2], TexCoord));
+         specularStrength = texture(material._specular[2], TexCoord).r;
       }
       else if (i == 3) {
-         specular += light_specular * spec * vec3(texture(material._specular[3], TexCoord));
+         specularStrength = texture(material._specular[3], TexCoord).r;
       }
       else if (i == 4) {
-         specular += light_specular * spec * vec3(texture(material._specular[4], TexCoord));
+         specularStrength = texture(material._specular[4], TexCoord).r;
       }
       else if (i == 5) {
-         specular += light_specular * spec * vec3(texture(material._specular[5], TexCoord));
+         specularStrength = texture(material._specular[5], TexCoord).r;
       }
       else if (i == 6) {
-         specular += light_specular * spec * vec3(texture(material._specular[6], TexCoord));
+         specularStrength = texture(material._specular[6], TexCoord).r;
       }
       else if (i == 7) {
-         specular += light_specular * spec * vec3(texture(material._specular[7], TexCoord));
+         specularStrength = texture(material._specular[7], TexCoord).r;
       }
       else if (i == 8) {
-         specular += light_specular * spec * vec3(texture(material._specular[8], TexCoord));
+         specularStrength = texture(material._specular[8], TexCoord).r;
       }
       else if (i == 9) {
-         specular += light_specular * spec * vec3(texture(material._specular[9], TexCoord));
+         specularStrength = texture(material._specular[9], TexCoord).r;
       }
+      specular += light_specular * spec * specularStrength;
       
    }
 }

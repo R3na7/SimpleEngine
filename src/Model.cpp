@@ -10,7 +10,7 @@ Model::Model(const std::vector<std::shared_ptr<Mesh>> & meshes, const std::strin
 
 void Model::ApplyTextureDiffuse(const std::string & textureDiffuseName) {
     for (int i = 0; i < _texturesDiffuse.size(); ++i) {
-        if (*_texturesDiffuse[i].get() == textureDiffuseName) {
+        if (*_texturesDiffuse[i] == textureDiffuseName) {
             std::cout << "Error loading texture " << textureDiffuseName << " : texture is already loading\n";
             return;
         }
@@ -29,7 +29,7 @@ void Model::ApplyTextureDiffuse(const std::string & textureDiffuseName) {
 
 void Model::ApplyTextureSpecular(const std::string & textureSpecularName) {
     for (int i = 0; i < _texturesSpecular.size(); ++i) {
-        if (*_texturesSpecular[i].get() == textureSpecularName) {
+        if (*_texturesSpecular[i] == textureSpecularName) {
             std::cout << "Error loading texture " << textureSpecularName << " : texture is already loading\n";
             return;
         }
@@ -48,7 +48,7 @@ void Model::ApplyTextureSpecular(const std::string & textureSpecularName) {
 
 void Model::ApplyTextureAmbient(const std::string & textureEmbientName) {
     for (int i = 0; i < _texturesEmbient.size(); ++i) {
-        if (*_texturesEmbient[i].get() == textureEmbientName) {
+        if (*_texturesEmbient[i] == textureEmbientName) {
             std::cout << "Error loading texture " << textureEmbientName << " : texture is already loading\n";
             return;
         }
