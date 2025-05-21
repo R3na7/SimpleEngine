@@ -33,9 +33,14 @@ int main() {
     auto green_cube = world.add(Model::getCube({0.1f, 0.9f, 0.1f, 1.0f}, 0.2f, "green"));
     auto blue_cube = world.add(Model::getCube({0.1f, 0.1f, 0.9f, 1.0f}, 0.2f, "blue"));
 
-    auto directionLight = world.add(DirectionLight());
+    auto greenPointLight = world.add(PointLight({0.0f, 0.1f, 0.0f}, {0.0f, 0.8f, 0.0f}, {0.0f, 0.8f, 0.0f}));
+    auto bluePointLight = world.add(PointLight({0.0f, 0.0f, 0.1f}, {0.0f, 0.0f, 0.8f}, {0.0f, 0.0f, 0.8f}));
+
+    //auto directionLight = world.add(DirectionLight());
     
     auto backpack = world.add(ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx"));
+    backpack->ApplyTextureDiffuse("assets/models/back/1001_albedo.jpg");
+    backpack->ApplyTextureSpecular("assets/models/back/1001_metallic.jpg");
 
     world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
     world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
@@ -47,10 +52,10 @@ int main() {
     glfwSetInputMode(window.getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     while (Window::havesWindow()) {
         
-        if (mouse.isButtonPressed(GLFW_MOUSE_BUTTON_1)) {
+        if (keyboard.isPressed(GLFW_KEY_J)) {
             greenCubeController.handleKeyboardInput();
             greenCubeController.handleMouseInput();
-        } else if (mouse.isButtonPressed(GLFW_MOUSE_BUTTON_2)) {
+        } else if (keyboard.isPressed(GLFW_KEY_K)) {
             blueCubeController.handleKeyboardInput();
             blueCubeController.handleMouseInput();
         } else {
@@ -58,7 +63,8 @@ int main() {
             camera_controller.handleKeyboardInput();
         }
         
-
+        greenPointLight->translate_to_point(green_cube->position());
+        bluePointLight->translate_to_point(blue_cube->position());
 
         renderer.render(world);
         window.setTitile(std::to_string(renderer.getFPS()).c_str());
