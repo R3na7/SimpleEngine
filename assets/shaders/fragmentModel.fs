@@ -87,9 +87,9 @@ void main()
    FragColor = vec4(result, 1.0);
 }
 
-void calcAmbient(out vec3 ambient, out vec3 diffuse, out vec3 light_ambient, out vec3 light_diffuse, out float diff);
-void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDir, out vec3 viewDir);
-void calcEmission(out vec3 emission);
+void calcAmbient(inout vec3 ambient, inout vec3 diffuse, in vec3 light_ambient, in vec3 light_diffuse, in float diff);
+void calcSpecular(inout vec3 specular, in vec3 light_specular, in vec3 reflectDir, in vec3 viewDir);
+void calcEmission(inout vec3 emission);
 
 vec3 CalcPointLight(PointLight light) {
    vec3 lightDir = normalize(light._position - FragPos);
@@ -189,7 +189,7 @@ vec3 CalcDirectionLight(DirectionLight light) {
 }
 
 
-void calcAmbient(out vec3 ambient, out vec3 diffuse, out vec3 light_ambient, out vec3 light_diffuse, out float diff) {
+void calcAmbient(inout vec3 ambient, inout vec3 diffuse, in vec3 light_ambient, in vec3 light_diffuse, in float diff) {
    for (int i = 0;  i < materialDiffuseCount; ++i) {
 
       if (i == 0) {
@@ -237,7 +237,7 @@ void calcAmbient(out vec3 ambient, out vec3 diffuse, out vec3 light_ambient, out
 }
 
 
-void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDir, out vec3 viewDir) {
+void calcSpecular(inout vec3 specular, in vec3 light_specular, in vec3 reflectDir, in vec3 viewDir) {
    for (int i = 0; i < materialSpecularCount; ++i) {
       float spec = pow(max(dot(reflectDir, viewDir), 0.0), material._shininess[i]);
       float specularStrength = 0.0;
@@ -278,7 +278,7 @@ void calcSpecular(out vec3 specular, out vec3 light_specular, out vec3 reflectDi
 }
 
 
-void calcEmission(out vec3 emission) {
+void calcEmission(inout vec3 emission) {
    for (int i = 0; i < materialEmissionCount; ++i) {
       if (i == 0) {
          emission  += vec3(texture(material._emission[0], TexCoord));
