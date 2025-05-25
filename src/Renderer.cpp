@@ -80,38 +80,38 @@ void Renderer::renderLights(const World & world) const {
     }
 }
 
-void Renderer::renderMesh(const std::shared_ptr<Mesh> mesh) const {
-    mesh->bindVertexArray();
+void Renderer::renderMesh(const Mesh & mesh) const {
+    mesh.bindVertexArray();
 
-    _shaderModels->uniformMatrix4("modelMesh", mesh->getModel());
-    _shaderModels->uniform4f("ourColor", mesh->getColor());
-    _shaderModels->uniform1f("ourShininess", mesh->getShininess());
+    _shaderModels->uniformMatrix4("modelMesh", mesh.getModel());
+    _shaderModels->uniform4f("ourColor", mesh.getColor());
+    _shaderModels->uniform1f("ourShininess", mesh.getShininess());
     
     int index = 0;
 
     int id = 0;
-    _shaderModels->uniform1i("materialDiffuseCount", mesh->getTexturesDiffuse().size());
-    for (const auto & texture : mesh->getTexturesDiffuse()) {
+    _shaderModels->uniform1i("materialDiffuseCount", mesh.getTexturesDiffuse().size());
+    for (const auto & texture : mesh.getTexturesDiffuse()) {
         texture->bindTextureDiffuse(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
     index = 0;
-    _shaderModels->uniform1i("materialSpecularCount", mesh->getTexturesSpecular().size());
-    for (const auto & texture : mesh->getTexturesSpecular()) {
+    _shaderModels->uniform1i("materialSpecularCount", mesh.getTexturesSpecular().size());
+    for (const auto & texture : mesh.getTexturesSpecular()) {
         texture->bindTextureSpecular(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
     index = 0;
-    _shaderModels->uniform1i("materialEmbientCount", mesh->getTexturesEmbient().size());
-    for (const auto & texture : mesh->getTexturesEmbient()) {
+    _shaderModels->uniform1i("materialEmbientCount", mesh.getTexturesEmbient().size());
+    for (const auto & texture : mesh.getTexturesEmbient()) {
         texture->bindTextureAmbient(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
     
-    glDrawElements(GL_TRIANGLES  , mesh->getIndicesCount(), GL_UNSIGNED_INT, 0);    
+    glDrawElements(GL_TRIANGLES  , mesh.getIndicesCount(), GL_UNSIGNED_INT, 0);    
 }
 
 void Renderer::renderLine(const glm::vec3 & firstPoint, const glm::vec3 & secondPoint) const {

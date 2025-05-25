@@ -14,7 +14,7 @@ std::string ResourceManager::getFilename()  {   return _filename;   }
 
 glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from);
 
-void processNode(aiNode * node, const aiScene * scene, std::vector<std::shared_ptr<Mesh>> & meshesModel,
+void processNode(aiNode * node, const aiScene * scene, std::vector<Mesh> & meshesModel,
                     std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel, 
                         std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
                             std::vector<std::shared_ptr<Texture>> & texturesEmbientModel, glm::mat4 parentTransform);
@@ -69,7 +69,7 @@ Model ResourceManager::loadModel(const std::string & filename) {
         return {{}, ""};
     }
 
-    std::vector<std::shared_ptr<Mesh>>    meshesModel;
+    std::vector<Mesh>    meshesModel;
     std::vector<std::shared_ptr<Texture>> texturesDiffuseModel;
     std::vector<std::shared_ptr<Texture>> texturesSpecularModel;
     std::vector<std::shared_ptr<Texture>> texturesEmbientModel;
@@ -202,7 +202,7 @@ glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from) {
     return to;
 }
 
-void processNode(aiNode * node, const aiScene * scene, std::vector<std::shared_ptr<Mesh>> & meshesModel,
+void processNode(aiNode * node, const aiScene * scene, std::vector<Mesh> & meshesModel,
                     std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel, 
                         std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
                             std::vector<std::shared_ptr<Texture>> & texturesEmbientModel, glm::mat4 parentTransform) {
@@ -220,7 +220,7 @@ void processNode(aiNode * node, const aiScene * scene, std::vector<std::shared_p
         aiMaterial * material = scene->mMaterials[meshAi->mMaterialIndex];
         proccesMaterial(material, mesh, path, texturesDiffuseModel, texturesSpecularModel, texturesEmbientModel);      
 
-        meshesModel.push_back(std::make_shared<Mesh>(mesh));
+        meshesModel.push_back(std::move(mesh));
 
     }
 

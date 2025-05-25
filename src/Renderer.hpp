@@ -33,7 +33,7 @@ private:
     void renderModels(const World & world) const;
     void renderLights(const World & world) const;
     void renderLine(const glm::vec3 & firstPoint, const glm::vec3 & secondPoint) const;
-    void renderMesh(const std::shared_ptr<Mesh> mesh) const;
+    void renderMesh(const Mesh & mesh) const;
 };
 
 #endif

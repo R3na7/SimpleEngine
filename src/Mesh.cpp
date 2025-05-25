@@ -33,7 +33,9 @@ Mesh::Mesh(const Mesh & other)
 
 Mesh::Mesh(Mesh && other)
 : Object(other), _vertices(std::move(other._vertices)), _indices(std::move(other._indices)), 
-                _texturesDiffuse(other._texturesDiffuse), _texturesSpecular(other._texturesSpecular), _texturesEmbient(other._texturesEmbient),
+                _texturesDiffuse(std::move(other._texturesDiffuse)), 
+                _texturesSpecular(std::move(other._texturesSpecular)), 
+                _texturesEmbient(std::move(other._texturesEmbient)),
                 _color(other._color), _VAO(other._VAO), _VBO(other._VBO), _EBO(other._EBO) {
     other._VAO = 0;
     other._VBO = 0;
@@ -45,7 +47,7 @@ void Mesh::bindVertexArray() const {
     glBindVertexArray(_VAO);
 }
 
-void Mesh::loadTextureDiffuse   (Texture * texture) {
+void Mesh::loadTextureDiffuse(Texture * texture) {
     int cnt;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &cnt);
     if (_texturesDiffuse.size() >= cnt) {
@@ -55,7 +57,7 @@ void Mesh::loadTextureDiffuse   (Texture * texture) {
         _texturesDiffuse.push_back(texture);
     }
 }
-void Mesh::loadTextureSpecular  (Texture * texture) {
+void Mesh::loadTextureSpecular(Texture * texture) {
     int cnt;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &cnt);
     if (_texturesSpecular.size() >= cnt) {
@@ -65,7 +67,7 @@ void Mesh::loadTextureSpecular  (Texture * texture) {
         _texturesSpecular.push_back(texture);
     }
 }
-void Mesh::loadTextureEmbient   (Texture * texture) {
+void Mesh::loadTextureEmbient(Texture * texture) {
     int cnt;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &cnt);
     if (_texturesEmbient.size() >= cnt) {
@@ -133,7 +135,7 @@ void Mesh::eboInit() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * _indices.size(), _indices.begin().base(), GL_STATIC_DRAW);
 }
 
-std::shared_ptr<Mesh> Mesh::getCube(const glm::vec4 & color, float size, const std::string & objectName) {
+Mesh Mesh::getCube(const glm::vec4 & color, float size, const std::string & objectName) {
     float HS = size; // Half size of the cube
 
     std::vector<Vertex> vertices = {
@@ -188,7 +190,7 @@ std::shared_ptr<Mesh> Mesh::getCube(const glm::vec4 & color, float size, const s
         // Bottom
         20, 21, 22, 20, 22, 23
     };
-    return std::make_shared<Mesh>(Mesh(vertices, indices, color, objectName));
+    return Mesh(vertices, indices, color, objectName);
 }
 
 Mesh::~Mesh() {   
