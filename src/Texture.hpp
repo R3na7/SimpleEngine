@@ -1,5 +1,5 @@
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
+#pragma once
+
 
 #include <string>
 
@@ -36,17 +36,15 @@ public:
 
     bool operator==(const std::string & filename) const;
     bool isLoaded()                               const;
-    bool isOwner()                                const;
 
     ~Texture();
 private:
     std::string _filename = "";
     bool _isHDR;
     
-    bool _isOwner;
+    std::size_t* _count;
     unsigned int _texture = 0;
 
     float _shininess = 128.0f;
 };
 
-#endif
