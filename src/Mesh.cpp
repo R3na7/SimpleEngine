@@ -47,45 +47,45 @@ void Mesh::bindVertexArray() const {
     glBindVertexArray(_VAO);
 }
 
-void Mesh::loadTextureDiffuse(Texture * texture) {
+void Mesh::loadTextureDiffuse(Texture & texture) {
     int cnt;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &cnt);
     if (_texturesDiffuse.size() >= cnt) {
         std::cout << "failed to load texture on " << _objectName << ": the number of available texture blocks has been exceeded\n";
     } else {
         _color = {0.0f, 0.0f, 0.0f, 0.0f};
-        _texturesDiffuse.push_back(texture);
+        _texturesDiffuse.push_back(&texture);
     }
 }
-void Mesh::loadTextureSpecular(Texture * texture) {
+void Mesh::loadTextureSpecular(Texture & texture) {
     int cnt;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &cnt);
     if (_texturesSpecular.size() >= cnt) {
         std::cout << "failed to load texture on " << _objectName << ": the number of available texture blocks has been exceeded\n";
     } else {
         _color = {0.0f, 0.0f, 0.0f, 0.0f};
-        _texturesSpecular.push_back(texture);
+        _texturesSpecular.push_back(&texture);
     }
 }
-void Mesh::loadTextureEmbient(Texture * texture) {
+void Mesh::loadTextureEmbient(Texture & texture) {
     int cnt;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &cnt);
     if (_texturesEmbient.size() >= cnt) {
         std::cout << "failed to load texture on " << _objectName << ": the number of available texture blocks has been exceeded\n";
     } else {
         _color = {0.0f, 0.0f, 0.0f, 0.0f};
-        _texturesEmbient.push_back(texture);
+        _texturesEmbient.push_back(&texture);
     }
 }
     
-void Mesh::removeTextureDiffuse (Texture * texture) {
-    _texturesDiffuse.erase(std::find(_texturesDiffuse.begin(), _texturesDiffuse.end(), texture));
+void Mesh::removeTextureDiffuse (Texture & texture) {
+    _texturesDiffuse.erase(std::find(_texturesDiffuse.begin(), _texturesDiffuse.end(), &texture));
 }
-void Mesh::removeTextureSpecular(Texture * texture) {
-    _texturesSpecular.erase(std::find(_texturesSpecular.begin(), _texturesSpecular.end(), texture));
+void Mesh::removeTextureSpecular(Texture & texture) {
+    _texturesSpecular.erase(std::find(_texturesSpecular.begin(), _texturesSpecular.end(), &texture));
 }
-void Mesh::removeTextureEmbient (Texture * texture) {
-    _texturesEmbient.erase(std::find(_texturesEmbient.begin(), _texturesEmbient.end(), texture));
+void Mesh::removeTextureEmbient (Texture & texture) {
+    _texturesEmbient.erase(std::find(_texturesEmbient.begin(), _texturesEmbient.end(), &texture));
 }
 
 void Mesh::clearTexturesDiffuse() {

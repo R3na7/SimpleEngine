@@ -15,6 +15,13 @@ public:
 
     Texture(const std::string & filename, float shininess = 128.0f);
 
+    Texture(const Texture & other);
+
+    Texture(Texture&& other);
+
+    Texture& operator=(const Texture & other);
+    Texture& operator=(Texture&& other);
+
     void loadTexture(const std::string & filename);
 
     std::string getFilename() const;
@@ -29,12 +36,14 @@ public:
 
     bool operator==(const std::string & filename) const;
     bool isLoaded()                               const;
+    bool isOwner()                                const;
 
     ~Texture();
 private:
     std::string _filename = "";
     bool _isHDR;
-
+    
+    bool _isOwner;
     unsigned int _texture = 0;
 
     float _shininess = 128.0f;

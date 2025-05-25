@@ -39,11 +39,12 @@ int main() {
     //auto directionLight = world.add(DirectionLight());
     
     auto backpack = world.add(ResourceManager::loadModel("assets/models/back/Survival_BackPack_2.fbx"));
+    backpack->translate({0.0f, 0.0f, -5.0f});
     backpack->ApplyTextureDiffuse("assets/models/back/1001_albedo.jpg");
     backpack->ApplyTextureSpecular("assets/models/back/1001_metallic.jpg");
 
-    world["green"]->translate_to_point({2.5f, -10.0f, 10.0f});
-    world["blue"]->translate_to_point({-2.5f, -10.0f, 10.0f});
+    world["green"]->translate_to_point({2.5f, 0.0f, -1.5f});
+    world["blue"]->translate_to_point({-2.5f, 0.0f, -1.5f});
     
     ObjectController camera_controller(world.getCurrentCamera(), &controllers);
     ObjectController greenCubeController(green_cube, &controllers);

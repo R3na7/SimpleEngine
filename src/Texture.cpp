@@ -8,6 +8,64 @@ Texture::Texture(const std::string &filename, float shininess)
     loadTexture(_filename);
 }
 
+
+Texture::Texture(const Texture & other)
+: _isOwner(false), _filename(other._filename), _isHDR(other._isHDR), _texture(other._texture), _shininess(other._shininess)  {}
+
+Texture::Texture(Texture&& other)
+: _isOwner(other._isOwner), _filename(std::move(other._filename)), 
+_isHDR(other._isHDR), _texture(other._texture), _shininess(other._shininess) {
+
+    other._filename = "";
+    other._texture = 0;
+
+}
+
+Texture& Texture::operator=(const Texture & other) {
+
+    if (this == &other) {
+        return *this;
+    }
+
+    if (_texture != 0 && _isOwner) {
+        glDeleteTextures(1, &_texture);
+    }
+
+    _filename  = other._filename;
+    _isHDR     = other._isHDR;
+    _shininess = other._shininess;
+    _texture   = other._texture;
+
+    _isOwner = false;
+
+    return *this;
+}
+
+Texture& Texture::operator=(Texture&& other) {
+
+    if (this == &other) {
+        return *this;
+    }
+
+    if (_texture != 0 && _isOwner) {
+        glDeleteTextures(1, &_texture);
+    }
+
+    _filename  = other._filename;
+    _isHDR     = other._isHDR;
+    _shininess = other._shininess;
+    _texture   = other._texture;
+    _isOwner   = other._isOwner;
+
+    other._filename = "";
+    other._texture  = 0;
+    other._isOwner  = false;
+
+    return *this;
+
+}
+
+
 void Texture::bindTextureDiffuse(const Shader &shader, unsigned int id, int index) const {
     if (_texture == 0) {
         std::cerr << "Error binding texture: the texture was not created\n";
@@ -40,6 +98,7 @@ void Texture::bindTextureAmbient(const Shader &shader, unsigned int id, int inde
 }
 
 void Texture::loadTexture(const std::string &filename) {
+    _isOwner = true;
     stbi_set_flip_vertically_on_load(true);
     _filename = filename;
 
@@ -125,13 +184,14 @@ void Texture::loadTexture(const std::string &filename) {
 
 bool Texture::operator==(const std::string &filename) const { return _filename == filename; }
 bool Texture::isLoaded() const { return _texture != 0; }
-bool Texture::isHDR() const { return _isHDR; }
+bool Texture::isHDR()    const { return _isHDR;        }
+bool Texture::isOwner()  const { return _isOwner;      }
 
 std::string Texture::getFilename() const { return _filename; }
 void Texture::setShininess(float shininess) { _shininess = shininess; }
 
 Texture::~Texture() {
-    if (_texture != 0) {
+    if (_texture != 0 && _isOwner) {
         glDeleteTextures(1, &_texture);
     }
 }

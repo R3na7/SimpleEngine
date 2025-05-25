@@ -15,9 +15,9 @@ std::string ResourceManager::getFilename()  {   return _filename;   }
 glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from);
 
 void processNode(aiNode * node, const aiScene * scene, std::vector<Mesh> & meshesModel,
-                    std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel, 
-                        std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
-                            std::vector<std::shared_ptr<Texture>> & texturesEmbientModel, glm::mat4 parentTransform);
+                    std::vector<Texture> & texturesDiffuseModel, 
+                        std::vector<Texture> & texturesSpecularModel,
+                            std::vector<Texture> & texturesEmbientModel, glm::mat4 parentTransform);
 
 Model ResourceManager::loadModel(const std::string & filename) {
     _filename = filename;
@@ -70,9 +70,9 @@ Model ResourceManager::loadModel(const std::string & filename) {
     }
 
     std::vector<Mesh>    meshesModel;
-    std::vector<std::shared_ptr<Texture>> texturesDiffuseModel;
-    std::vector<std::shared_ptr<Texture>> texturesSpecularModel;
-    std::vector<std::shared_ptr<Texture>> texturesEmbientModel;
+    std::vector<Texture> texturesDiffuseModel;
+    std::vector<Texture> texturesSpecularModel;
+    std::vector<Texture> texturesEmbientModel;
 
     std::string path = _filename.substr(0, _filename.find_last_of("/"));
 
@@ -87,7 +87,7 @@ Model ResourceManager::loadModel(const std::string & filename) {
 
             std::cout << textureFilePath << '\n';
 
-            texturesDiffuseModel.emplace_back(std::make_shared<Texture>(textureFilePath));
+            texturesDiffuseModel.emplace_back(textureFilePath);
         }
 
         for (int j = 0; j < material->GetTextureCount(aiTextureType_SPECULAR); ++j) 
@@ -99,7 +99,7 @@ Model ResourceManager::loadModel(const std::string & filename) {
             float shininess;
             material->Get(AI_MATKEY_SHININESS, shininess);
 
-            texturesSpecularModel.emplace_back(std::make_shared<Texture>(textureFilePath, shininess));        }
+            texturesSpecularModel.emplace_back(textureFilePath, shininess);        }
 
         for (int j = 0; j < material->GetTextureCount(aiTextureType_AMBIENT); ++j) 
         {
@@ -107,7 +107,7 @@ Model ResourceManager::loadModel(const std::string & filename) {
             material->GetTexture(aiTextureType_AMBIENT, j, &textureFileName);
             std::string textureFilePath = path + "/" + textureFileName.C_Str();
 
-            texturesEmbientModel.emplace_back(std::make_shared<Texture>(textureFilePath));
+            texturesEmbientModel.emplace_back(textureFilePath);
         }                
     }
 
@@ -116,7 +116,11 @@ Model ResourceManager::loadModel(const std::string & filename) {
     std::string sceneName = scene->mName.length > 0 ? scene->mName.C_Str() : "Unnamed Scene";
 
     _filename = "";
-    return {meshesModel, sceneName, texturesDiffuseModel, texturesSpecularModel, texturesEmbientModel};
+    return {std::move(meshesModel), std::move(sceneName), 
+        std::move(texturesDiffuseModel), 
+        std::move(texturesSpecularModel), 
+        std::move(texturesEmbientModel)
+    };
 }
 
 
@@ -163,31 +167,31 @@ Mesh processMesh(const aiMesh * meshAi) {
 }
 
 void proccesMaterial(aiMaterial * material, Mesh & mesh, const std::string & path,
-                    std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel, 
-                        std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
-                            std::vector<std::shared_ptr<Texture>> & texturesEmbientModel) {
+                    std::vector<Texture> & texturesDiffuseModel, 
+                        std::vector<Texture> & texturesSpecularModel,
+                            std::vector<Texture> & texturesEmbientModel) {
 
     for (int j = 0; j < material->GetTextureCount(aiTextureType_DIFFUSE); ++j) {
         aiString textureFileName;
 
         material->GetTexture(aiTextureType_DIFFUSE, j, &textureFileName);
         for (auto & textureDifuse : texturesDiffuseModel) {
-            if (*textureDifuse == path + "/" + textureFileName.C_Str()) {
-                mesh.loadTextureDiffuse(textureDifuse.get());
+            if (textureDifuse == path + "/" + textureFileName.C_Str()) {
+                mesh.loadTextureDiffuse(textureDifuse);
             }    
         }
 
         material->GetTexture(aiTextureType_SPECULAR, j, &textureFileName);
         for (auto & textureSpecular : texturesSpecularModel) {
-            if (*textureSpecular == path + "/" + textureFileName.C_Str()) {
-                mesh.loadTextureSpecular(textureSpecular.get());
+            if (textureSpecular == path + "/" + textureFileName.C_Str()) {
+                mesh.loadTextureSpecular(textureSpecular);
             }
         } 
 
         material->GetTexture(aiTextureType_AMBIENT, j, &textureFileName);
         for (auto & textureEmbient : texturesEmbientModel) {
-            if (*textureEmbient == path + "/" + textureFileName.C_Str()) {
-                mesh.loadTextureEmbient(textureEmbient.get());
+            if (textureEmbient == path + "/" + textureFileName.C_Str()) {
+                mesh.loadTextureEmbient(textureEmbient);
             }
         }         
     }       
@@ -203,9 +207,9 @@ glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from) {
 }
 
 void processNode(aiNode * node, const aiScene * scene, std::vector<Mesh> & meshesModel,
-                    std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel, 
-                        std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
-                            std::vector<std::shared_ptr<Texture>> & texturesEmbientModel, glm::mat4 parentTransform) {
+                    std::vector<Texture> & texturesDiffuseModel, 
+                        std::vector<Texture> & texturesSpecularModel,
+                            std::vector<Texture> & texturesEmbientModel, glm::mat4 parentTransform) {
 
     glm::mat4x4 nodeTransform = parentTransform * aiMatrix4x4ToGlm(node->mTransformation);
     std::string path = ResourceManager::getFilename().substr(0, ResourceManager::getFilename().find_last_of("/"));

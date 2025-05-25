@@ -40,13 +40,13 @@ public:
 
     void bindVertexArray() const;
 
-    void loadTextureDiffuse   (Texture * texture);
-    void loadTextureSpecular  (Texture * texture);
-    void loadTextureEmbient   (Texture * texture);
+    void loadTextureDiffuse   (Texture & texture);
+    void loadTextureSpecular  (Texture & texture);
+    void loadTextureEmbient   (Texture & texture);
 
-    void removeTextureDiffuse (Texture * texture);
-    void removeTextureSpecular(Texture * texture);
-    void removeTextureEmbient (Texture * texture);
+    void removeTextureDiffuse (Texture & texture);
+    void removeTextureSpecular(Texture & texture);
+    void removeTextureEmbient (Texture & texture);
 
     void clearTexturesDiffuse();
     void clearTexturesSpecular();
