@@ -1,28 +1,38 @@
 # SimpleEngine
 
+![C++](https://img.shields.io/badge/C%2B%2B-20-00599C?logo=c%2B%2B&logoColor=white)
+![OpenGL](https://img.shields.io/badge/OpenGL-3.3-5586A4?logo=opengl&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-3.20%2B-064F8C?logo=cmake&logoColor=white)
+[![C++ CI](https://github.com/R3na7/SimpleEngine/actions/workflows/build.yml/badge.svg)](https://github.com/R3na7/SimpleEngine/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 SimpleEngine is an educational 3D rendering engine written in C++20 and OpenGL 3.3.
 It demonstrates a compact real-time rendering pipeline, model loading, textured meshes,
 Phong-style lighting, and interactive camera controls.
+
+> [!NOTE]
+> SimpleEngine is an educational project created while learning C++, OpenGL, 3D graphics,
+> and resource management. It is not intended to be a production-ready game engine.
 
 ## Demo
 
 ### Demo scene
 
-![SimpleEngine demo scene](docs/images/simpleengine-main.png)
+<!-- Add demo scene image here -->
 
 The textured FBX backpack is positioned between the blue and green cubes. Each cube has an
 associated point light with the same color.
 
 ### Dynamic lighting
 
-![Moving colored point lights](docs/gifs/simpleengine-controls.gif)
+<!-- Add dynamic lighting GIF/image here -->
 
 The backpack is illuminated by the green cube while the blue cube moves through the scene
 with its point light attached.
 
 ### Lighting close-up
 
-![Blue and green Phong highlights on the backpack](docs/images/simpleengine-lighting.png)
+<!-- Add lighting close-up image here -->
 
 The close-up shows the blue and green diffuse/specular lighting on the backpack surface.
 
@@ -156,17 +166,17 @@ added to it is drawn by `renderer.render(world)`.
 
 ## Implemented interface
 
-| Area | Available interface |
-| --- | --- |
-| Scene management | `World::add`, `remove`, `at`, `operator[]`, active-camera selection, and typed object collections |
-| Built-in geometry | `Model::getCube` and `Mesh::getCube` |
-| Model loading | `ResourceManager::loadModel` for `.obj`, `.fbx`, and `.FBX` files |
-| Object transforms | `translate`, `translate_to_point`, `rotate`, axis rotations, `scale`, `Pitch`, and `Yaw` |
-| Textures and materials | Texture loading plus diffuse/specular textures, color, and shininess |
-| Lighting | Point lights, spotlights, and directional lights with their lighting parameters |
-| Camera | Perspective projection, view matrix, position, yaw, pitch, and active-camera selection |
-| Rendering | World rendering, camera/light/material uniforms, framebuffer clearing, and FPS calculation |
-| Window and input | GLFW window/context management, keyboard state, mouse state, and `ObjectController` |
+| Area                   | Available interface                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------- |
+| Scene management       | `World::add`, `remove`, `at`, `operator[]`, active-camera selection, and typed object collections |
+| Built-in geometry      | `Model::getCube` and `Mesh::getCube`                                                              |
+| Model loading          | `ResourceManager::loadModel` for `.obj`, `.fbx`, and `.FBX` files                                 |
+| Object transforms      | `translate`, `translate_to_point`, `rotate`, axis rotations, `scale`, `Pitch`, and `Yaw`          |
+| Textures and materials | Texture loading plus diffuse/specular textures, color, and shininess                              |
+| Lighting               | Point lights, spotlights, and directional lights with their lighting parameters                   |
+| Camera                 | Perspective projection, view matrix, position, yaw, pitch, and active-camera selection            |
+| Rendering              | World rendering, camera/light/material uniforms, framebuffer clearing, and FPS calculation        |
+| Window and input       | GLFW window/context management, keyboard state, mouse state, and `ObjectController`               |
 
 This table lists only working parts of the current rendering path. Scene serialization,
 line rendering, and the unfinished ambient/emission texture path are not included.
@@ -207,16 +217,16 @@ The application requires a desktop session and an OpenGL 3.3-capable graphics dr
 
 ## Controls
 
-| Input | Action |
-| --- | --- |
-| Mouse movement | Rotate the active camera or selected cube |
-| `W` / `S` | Move forward / backward on the horizontal plane |
-| `A` / `D` | Move left / right on the horizontal plane |
-| `Space` / `Left Shift` | Move up / down |
-| `Q` / `E` | Rotate left / right |
-| Hold `J` | Control the green cube instead of the camera |
-| Hold `K` | Control the blue cube instead of the camera |
-| `Escape` | Close the application |
+| Input                  | Action                                          |
+| ---------------------- | ----------------------------------------------- |
+| Mouse movement         | Rotate the active camera or selected cube       |
+| `W` / `S`              | Move forward / backward on the horizontal plane |
+| `A` / `D`              | Move left / right on the horizontal plane       |
+| `Space` / `Left Shift` | Move up / down                                  |
+| `Q` / `E`              | Rotate left / right                             |
+| Hold `J`               | Control the green cube instead of the camera    |
+| Hold `K`               | Control the blue cube instead of the camera     |
+| `Escape`               | Close the application                           |
 
 Moving either cube also moves its associated point light.
 
