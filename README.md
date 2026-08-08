@@ -18,21 +18,21 @@ Phong-style lighting, and interactive camera controls.
 
 ### Demo scene
 
-<!-- Add demo scene image here -->
+![SimpleEngine demo scene](docs/images/simpleengine-main.png)
 
 The textured FBX backpack is positioned between the blue and green cubes. Each cube has an
 associated point light with the same color.
 
 ### Dynamic lighting
 
-<!-- Add dynamic lighting GIF/image here -->
+![Moving colored point lights](docs/gifs/simpleengine-controls.gif)
 
 The backpack is illuminated by the green cube while the blue cube moves through the scene
 with its point light attached.
 
 ### Lighting close-up
 
-<!-- Add lighting close-up image here -->
+![Blue and green Phong highlights on the backpack](docs/images/simpleengine-lighting.png)
 
 The close-up shows the blue and green diffuse/specular lighting on the backpack surface.
 
