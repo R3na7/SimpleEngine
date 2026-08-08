@@ -4,20 +4,31 @@
 
 Keyboard::Keyboard(GLFWwindow * window)
 : _window(window) {
-    glfwSetKeyCallback(_window, keyboardCallback);
+    if (_window) {
+        glfwSetKeyCallback(_window, keyboardCallback);
+    }
 }
     
 bool Keyboard::isPressed(int key) const {
+    if (key < 0 || key > GLFW_KEY_LAST) {
+        return false;
+    }
     return _keys[key];
 }
 
 bool Keyboard::isPressedNow(int key) {
+    if (key < 0 || key > GLFW_KEY_LAST) {
+        return false;
+    }
     bool pressed = _keysPressed[key];
     _keysPressed[key] = false;
     return pressed;
 }
 
 bool Keyboard::isReleasedNow(int key) {
+    if (key < 0 || key > GLFW_KEY_LAST) {
+        return false;
+    }
     bool release = _keysReleased[key];
     _keysReleased[key] = false;
     return release;
@@ -25,7 +36,14 @@ bool Keyboard::isReleasedNow(int key) {
 
 void Keyboard::keyboardCallback(GLFWwindow * window, int key, int scancode, int action, int mods) {
 
-    Keyboard * keyboard = (static_cast<InputObjects*>(glfwGetWindowUserPointer(window)))->_keyboard;
+    auto * input = static_cast<InputObjects*>(glfwGetWindowUserPointer(window));
+    if (!input || !input->_keyboard) {
+        return;
+    }
+    if (key < 0 || key > GLFW_KEY_LAST) {
+        return;
+    }
+    Keyboard * keyboard = input->_keyboard;
 
     if (keyboard) {
         if (action == GLFW_PRESS) {

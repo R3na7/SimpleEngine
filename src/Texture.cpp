@@ -4,70 +4,8 @@
 #include "stb_image/stb_image.h"
 
 Texture::Texture(const std::string &filename, float shininess)
-    : _filename(filename), _shininess(shininess), _texture(0), _isHDR(false) {
+    : _filename(filename), _isHDR(false), _texture(0), _shininess(shininess) {
     loadTexture(_filename);
-}
-
-
-Texture::Texture(const Texture & other)
-: _count(other._count), _filename(other._filename), _isHDR(other._isHDR), _texture(other._texture), _shininess(other._shininess)  {
-    ++*_count;
-}
-
-Texture::Texture(Texture&& other)
-: _count(other._count), _filename(std::move(other._filename)), 
-_isHDR(other._isHDR), _texture(other._texture), _shininess(other._shininess) {
-
-    other._filename = "";
-    other._texture = 0;
-    other._count = nullptr;
-
-}
-
-Texture& Texture::operator=(const Texture & other) {
-
-    if (this == &other) {
-        return *this;
-    }
-
-    --*_count;
-    if (_texture != 0 && *_count == 0) {
-        glDeleteTextures(1, &_texture);
-    }
-
-    _filename  = other._filename;
-    _isHDR     = other._isHDR;
-    _shininess = other._shininess;
-    _texture   = other._texture;
-    _count     = other._count;
-    
-    ++*_count;
-
-    return *this;
-}
-
-Texture& Texture::operator=(Texture&& other) {
-
-    if (this == &other) {
-        return *this;
-    }
-
-    --*_count;
-    if (_texture != 0 && *_count == 0) {
-        glDeleteTextures(1, &_texture);
-    }
-
-    _filename  = other._filename;
-    _isHDR     = other._isHDR;
-    _shininess = other._shininess;
-    _texture   = other._texture;
-
-
-    other._filename = "";
-    other._texture  = 0;
-    other._count    = nullptr;
-
-    return *this;
 }
 
 
@@ -105,6 +43,7 @@ void Texture::bindTextureAmbient(const Shader &shader, unsigned int id, int inde
 void Texture::loadTexture(const std::string &filename) {
     stbi_set_flip_vertically_on_load(true);
     _filename = filename;
+    _isHDR = false;
 
     if (_texture != 0) {
         glDeleteTextures(1, &_texture);
@@ -175,14 +114,17 @@ void Texture::loadTexture(const std::string &filename) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    GLint unpackAlignment = 4;
+    glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     if (_isHDR) {
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_FLOAT, data);
     } else {
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     }
+    glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignment);
     glGenerateMipmap(GL_TEXTURE_2D);
-
-    _count = new std::size_t(1);
     
     stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -196,12 +138,7 @@ std::string Texture::getFilename() const { return _filename; }
 void Texture::setShininess(float shininess) { _shininess = shininess; }
 
 Texture::~Texture() {
-    if (!_count) {
-        return;
-    }
-    --*_count;
-    if (_texture != 0 && *_count == 0) {
+    if (_texture != 0) {
         glDeleteTextures(1, &_texture);
-        delete _count;
     }
 }

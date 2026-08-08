@@ -1,3 +1,4 @@
-rm .\build\Debug\bin\Engine.exe 
-cmake --build ./build
+@echo off
+cmake --build .\build --config Debug
+if errorlevel 1 exit /b %errorlevel%
 .\build\Debug\bin\Engine.exe

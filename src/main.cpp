@@ -4,20 +4,18 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 #include "Renderer.hpp"
 #include "ObjectController.hpp"
 #include "Utilities/ResourceManager.hpp"
 
-int main() {
-    Time::init();
-    ResourceManager::init();
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+namespace {
+int runEngine() {
     Window window(800, 600);
+    if (!window.isOpen()) {
+        return 1;
+    }
     window.setBackgroundColor(0.2f, 0.2f, 0.2f, 1.0f);
     
     Renderer renderer(window);
@@ -51,6 +49,7 @@ int main() {
     ObjectController blueCubeController(blue_cube, &controllers);
     
     glfwSetInputMode(window.getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    Time::init();
     while (Window::havesWindow()) {
         
         if (keyboard.isPressed(GLFW_KEY_J)) {
@@ -73,5 +72,24 @@ int main() {
 
         Time::update();
     }
+
+    return 0;
+}
+}
+
+int main() {
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW\n";
+        return 1;
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    ResourceManager::init();
+
+    const int result = runEngine();
     glfwTerminate();
+    return result;
 }

@@ -16,6 +16,10 @@ private:
 
 public:
     Shader (const char * vertexPath, const char * fragmentPath);
+    Shader(const Shader & other) = delete;
+    Shader(Shader && other) noexcept;
+    Shader& operator=(const Shader & other) = delete;
+    Shader& operator=(Shader && other) noexcept;
 
     void use();
 

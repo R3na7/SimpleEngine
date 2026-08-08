@@ -11,10 +11,8 @@ Support for downloading 3D models of the format.FBX and .OBJ
 ```sh
 git clone https://github.com/R3na7/SimpleEngine.git
 cd ./SimpleEngine
-mkdir ./build
-cd ./build
-cmake -G "YOUR_GENERATOR" ..
-cmake --build .
+cmake -S . -B build -G "YOUR_GENERATOR"
+cmake --build build --config Debug
 ```
 
-The result of the build will be located in the folder ./build/BUILD_TYPE/bin
+The result of the build will be located in the folder `./build/BUILD_TYPE/bin`.

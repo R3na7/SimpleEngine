@@ -17,6 +17,7 @@ public:
     Window(int width, int height, const char * title, const Window & share, bool isFullscreen = false);
 
     Window(const Window & window);
+    Window & operator=(const Window & window) = delete;
 
     bool shouldClose() const;
 
@@ -52,12 +53,12 @@ private:
 
     std::string _title;
 
-    GLFWwindow *_window;
+    GLFWwindow *_window = nullptr;
     
     glm::vec4 _backgroundColor {0.0f, 0.0f, 0.0f, 1.0f};
 
     bool _isFullscreen;
-    bool _isOpen;
+    bool _isOpen = false;
 
     static int _windowCount;
 };

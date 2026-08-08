@@ -76,6 +76,23 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }
+
+Shader::Shader(Shader && other) noexcept
+: ID(other.ID) {
+    other.ID = 0;
+}
+
+Shader& Shader::operator=(Shader && other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+    if (ID != 0) {
+        glDeleteProgram(ID);
+    }
+    ID = other.ID;
+    other.ID = 0;
+    return *this;
+}
 void Shader::use() {
     glUseProgram(ID);
 }
@@ -103,7 +120,9 @@ void Shader::uniform1i(const std::string & name, int value) const {
 unsigned int Shader::getId() const {    return ID;  }
 
 Shader::~Shader() {
-    glDeleteShader(ID);
+    if (ID != 0) {
+        glDeleteProgram(ID);
+    }
 }
 
 #endif

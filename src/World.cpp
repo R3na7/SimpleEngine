@@ -4,11 +4,17 @@
 World::World(const std::string & worldName, 
                 const std::vector<Camera *> & cameras, const std::vector<Mesh *> & meshes)
 : _worldName(worldName), _currentCamera(nullptr) {
-    if (!cameras.empty()) {
-        for (int i = 0; i < cameras.size(); ++i) add(*cameras[i]);
-    } else {
+    for (const auto * camera : cameras) {
+        if (camera) add(*camera);
+    }
+    if (_camerasVector.empty()) {
         add(Camera());
     }
+
+    for (const auto * mesh : meshes) {
+        if (mesh) add(*mesh);
+    }
+
     _currentCamera = _camerasVector[0];
 }
 
@@ -31,7 +37,7 @@ void World::setCurrentCamera(const std::string & cameraName) {
     }   
 }
 
-std::shared_ptr<Object> World::operator[](const std::string & id) {    return _objectsMap[id]; }
+std::shared_ptr<Object> World::operator[](const std::string & id) {    return at(id); }
 
 std::shared_ptr<Object> World::at(const std::string& name) {
     try {
@@ -61,20 +67,22 @@ std::shared_ptr<DirectionLight> World::getDirectionLight(const std::string& dirL
 
     auto it = std::find_if(_directionLightsVector.begin(), _directionLightsVector.end(),
         [&dirLightName](const std::shared_ptr<DirectionLight>& directionLight) {
-            return directionLight->getName() == dirLightName;
+            return directionLight && directionLight->getName() == dirLightName;
         });
     
     if (it != _directionLightsVector.end()) {
         return *it;
     }
 
-    return add(DirectionLight());
+    DirectionLight directionLight;
+    directionLight.setName(dirLightName);
+    return add(directionLight);
 }
 
 int World::numberSuchNames(const std::string & name) const {
     int suffix = 0;
     std::string newName = name;
-    
+
     while (_objectsMap.find(newName) != _objectsMap.end()) {
         suffix++;
         newName = name + "_" + std::to_string(suffix);

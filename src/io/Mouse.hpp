@@ -11,8 +11,8 @@ class Mouse {
 public:
     Mouse(GLFWwindow * window);
 
-    float getScrollX();
-    float getScrollY();
+    double getScrollX();
+    double getScrollY();
     float getOffsetX();
     float getOffsetY();
     float getX() const;
@@ -37,12 +37,12 @@ private:
 
     float _sensitivity = 0.1f;
 
-    int _scrollX = 0;
-    int _scrollY = 0;
+    double _scrollX = 0.0;
+    double _scrollY = 0.0;
 
-    std::array<bool, GLFW_MOUSE_BUTTON_LAST> _buttons {};
-    std::array<bool, GLFW_MOUSE_BUTTON_LAST> _buttonsPress {};
-    std::array<bool, GLFW_MOUSE_BUTTON_LAST> _buttonsRelease {};
+    std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> _buttons {};
+    std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> _buttonsPress {};
+    std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> _buttonsRelease {};
 
     bool _inWindow = false;
 

@@ -11,7 +11,7 @@ public:
     static float LastTime();
     static void update();
 
-    ~Time();
+    ~Time() = default;
 private:
     Time() = default;
 

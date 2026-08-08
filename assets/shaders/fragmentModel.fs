@@ -2,11 +2,11 @@
 out vec4 FragColor;
 
 struct Material {
-   sampler2D _diffuse[10];
-   sampler2D _specular[10];
-   sampler2D _emission[10];
+   sampler2D _diffuse[5];
+   sampler2D _specular[5];
+   sampler2D _emission[5];
 
-   float _shininess[10];
+   float _shininess[5];
 };
 
 struct PointLight {
@@ -212,26 +212,6 @@ void calcAmbient(inout vec3 ambient, inout vec3 diffuse, in vec3 light_ambient, 
          ambient += light_ambient *        vec3(texture(material._diffuse[4], TexCoord));
          diffuse += light_diffuse * diff * vec3(texture(material._diffuse[4], TexCoord));      
       }      
-      else if (i == 5) {
-         ambient += light_ambient *        vec3(texture(material._diffuse[5], TexCoord));
-         diffuse += light_diffuse * diff * vec3(texture(material._diffuse[5], TexCoord));      
-      }
-      else if (i == 6) {
-         ambient += light_ambient *        vec3(texture(material._diffuse[6], TexCoord));
-         diffuse += light_diffuse * diff * vec3(texture(material._diffuse[6], TexCoord));      
-      }      
-      else if (i == 7) {
-         ambient += light_ambient *        vec3(texture(material._diffuse[7], TexCoord));
-         diffuse += light_diffuse * diff * vec3(texture(material._diffuse[7], TexCoord));      
-      }  
-      else if (i == 8) {
-         ambient += light_ambient *        vec3(texture(material._diffuse[8], TexCoord));
-         diffuse += light_diffuse * diff * vec3(texture(material._diffuse[8], TexCoord));      
-      }  
-      else if (i == 9) {
-         ambient += light_ambient *        vec3(texture(material._diffuse[9], TexCoord));
-         diffuse += light_diffuse * diff * vec3(texture(material._diffuse[9], TexCoord));      
-      }                           
    }
    
 }
@@ -257,21 +237,6 @@ void calcSpecular(inout vec3 specular, in vec3 light_specular, in vec3 reflectDi
       else if (i == 4) {
          specularStrength = texture(material._specular[4], TexCoord).r;
       }
-      else if (i == 5) {
-         specularStrength = texture(material._specular[5], TexCoord).r;
-      }
-      else if (i == 6) {
-         specularStrength = texture(material._specular[6], TexCoord).r;
-      }
-      else if (i == 7) {
-         specularStrength = texture(material._specular[7], TexCoord).r;
-      }
-      else if (i == 8) {
-         specularStrength = texture(material._specular[8], TexCoord).r;
-      }
-      else if (i == 9) {
-         specularStrength = texture(material._specular[9], TexCoord).r;
-      }
       specular += light_specular * spec * specularStrength;
       
    }
@@ -295,21 +260,5 @@ void calcEmission(inout vec3 emission) {
       else if (i == 4) {
          emission  += vec3(texture(material._emission[4], TexCoord));
       }
-      else if (i == 5) {
-         emission  += vec3(texture(material._emission[5], TexCoord));
-      }
-      else if (i == 6) {
-         emission  += vec3(texture(material._emission[6], TexCoord));
-      }
-      else if (i == 7) {
-         emission  += vec3(texture(material._emission[7], TexCoord));
-      }
-      else if (i == 8) {
-         emission  += vec3(texture(material._emission[8], TexCoord));
-      }
-      else if (i == 9) {
-         emission  += vec3(texture(material._emission[9], TexCoord));
-      }
-      
    }   
 }

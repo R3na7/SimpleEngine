@@ -13,14 +13,12 @@ class Texture {
 public:
     Texture() = default;
 
-    Texture(const std::string & filename, float shininess = 128.0f);
+    explicit Texture(const std::string & filename, float shininess = 128.0f);
 
-    Texture(const Texture & other);
-
-    Texture(Texture&& other);
-
-    Texture& operator=(const Texture & other);
-    Texture& operator=(Texture&& other);
+    Texture(const Texture & other) = delete;
+    Texture(Texture && other) = delete;
+    Texture& operator=(const Texture & other) = delete;
+    Texture& operator=(Texture && other) = delete;
 
     void loadTexture(const std::string & filename);
 
@@ -40,11 +38,9 @@ public:
     ~Texture();
 private:
     std::string _filename = "";
-    bool _isHDR;
-    
-    std::size_t* _count;
+    bool _isHDR = false;
+
     unsigned int _texture = 0;
 
     float _shininess = 128.0f;
 };
-

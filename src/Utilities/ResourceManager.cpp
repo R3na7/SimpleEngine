@@ -1,13 +1,14 @@
 #include "ResourceManager.hpp"
 #include "../Renderer.hpp"
 #include <iomanip> 
+#include <memory>
 
 ResourceManager * ResourceManager::_instance = nullptr;
 std::string ResourceManager::_filename = "";
 
 void ResourceManager::init() {
-    delete _instance;
-    _instance = new ResourceManager;
+    static ResourceManager instance;
+    _instance = &instance;
 }
 
 std::string ResourceManager::getFilename()  {   return _filename;   }
@@ -15,9 +16,9 @@ std::string ResourceManager::getFilename()  {   return _filename;   }
 glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from);
 
 void processNode(aiNode * node, const aiScene * scene, std::vector<Mesh> & meshesModel,
-                    std::vector<Texture> & texturesDiffuseModel, 
-                        std::vector<Texture> & texturesSpecularModel,
-                            std::vector<Texture> & texturesEmbientModel, glm::mat4 parentTransform);
+                    std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel,
+                        std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
+                            std::vector<std::shared_ptr<Texture>> & texturesEmbientModel, glm::mat4 parentTransform);
 
 Model ResourceManager::loadModel(const std::string & filename) {
     _filename = filename;
@@ -70,11 +71,12 @@ Model ResourceManager::loadModel(const std::string & filename) {
     }
 
     std::vector<Mesh>    meshesModel;
-    std::vector<Texture> texturesDiffuseModel;
-    std::vector<Texture> texturesSpecularModel;
-    std::vector<Texture> texturesEmbientModel;
+    std::vector<std::shared_ptr<Texture>> texturesDiffuseModel;
+    std::vector<std::shared_ptr<Texture>> texturesSpecularModel;
+    std::vector<std::shared_ptr<Texture>> texturesEmbientModel;
 
-    std::string path = _filename.substr(0, _filename.find_last_of("/"));
+    const std::size_t separator = _filename.find_last_of("/\\");
+    std::string path = separator == std::string::npos ? "." : _filename.substr(0, separator);
 
     for (int i = 0; i < scene->mNumMaterials; ++i) {
         aiMaterial * material = scene->mMaterials[i];
@@ -87,7 +89,7 @@ Model ResourceManager::loadModel(const std::string & filename) {
 
             std::cout << textureFilePath << '\n';
 
-            texturesDiffuseModel.emplace_back(textureFilePath);
+            texturesDiffuseModel.emplace_back(std::make_shared<Texture>(textureFilePath));
         }
 
         for (int j = 0; j < material->GetTextureCount(aiTextureType_SPECULAR); ++j) 
@@ -96,10 +98,11 @@ Model ResourceManager::loadModel(const std::string & filename) {
             material->GetTexture(aiTextureType_SPECULAR, j, &textureFileName);
             std::string textureFilePath = path + "/" + textureFileName.C_Str();
 
-            float shininess;
+            float shininess = 128.0f;
             material->Get(AI_MATKEY_SHININESS, shininess);
 
-            texturesSpecularModel.emplace_back(textureFilePath, shininess);        }
+            texturesSpecularModel.emplace_back(std::make_shared<Texture>(textureFilePath, shininess));
+        }
 
         for (int j = 0; j < material->GetTextureCount(aiTextureType_AMBIENT); ++j) 
         {
@@ -107,11 +110,11 @@ Model ResourceManager::loadModel(const std::string & filename) {
             material->GetTexture(aiTextureType_AMBIENT, j, &textureFileName);
             std::string textureFilePath = path + "/" + textureFileName.C_Str();
 
-            texturesEmbientModel.emplace_back(textureFilePath);
+            texturesEmbientModel.emplace_back(std::make_shared<Texture>(textureFilePath));
         }                
     }
 
-    processNode(scene->mRootNode, scene, meshesModel, texturesDiffuseModel, texturesSpecularModel, texturesEmbientModel, aiMatrix4x4ToGlm(scene->mRootNode->mTransformation));
+    processNode(scene->mRootNode, scene, meshesModel, texturesDiffuseModel, texturesSpecularModel, texturesEmbientModel, glm::mat4(1.0f));
 
     std::string sceneName = scene->mName.length > 0 ? scene->mName.C_Str() : "Unnamed Scene";
 
@@ -167,34 +170,51 @@ Mesh processMesh(const aiMesh * meshAi) {
 }
 
 void proccesMaterial(aiMaterial * material, Mesh & mesh, const std::string & path,
-                    std::vector<Texture> & texturesDiffuseModel, 
-                        std::vector<Texture> & texturesSpecularModel,
-                            std::vector<Texture> & texturesEmbientModel) {
+                    std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel,
+                        std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
+                            std::vector<std::shared_ptr<Texture>> & texturesEmbientModel) {
 
     for (int j = 0; j < material->GetTextureCount(aiTextureType_DIFFUSE); ++j) {
         aiString textureFileName;
-
-        material->GetTexture(aiTextureType_DIFFUSE, j, &textureFileName);
-        for (auto & textureDifuse : texturesDiffuseModel) {
-            if (textureDifuse == path + "/" + textureFileName.C_Str()) {
-                mesh.loadTextureDiffuse(textureDifuse);
-            }    
+        if (material->GetTexture(aiTextureType_DIFFUSE, j, &textureFileName) != AI_SUCCESS) {
+            continue;
         }
+        std::string texturePath = path + "/" + textureFileName.C_Str();
+        for (const auto & textureDifuse : texturesDiffuseModel) {
+            if (textureDifuse && *textureDifuse == texturePath) {
+                mesh.loadTextureDiffuse(textureDifuse);
+                break;
+            }
+        }
+    }
 
-        material->GetTexture(aiTextureType_SPECULAR, j, &textureFileName);
-        for (auto & textureSpecular : texturesSpecularModel) {
-            if (textureSpecular == path + "/" + textureFileName.C_Str()) {
+    for (int j = 0; j < material->GetTextureCount(aiTextureType_SPECULAR); ++j) {
+        aiString textureFileName;
+        if (material->GetTexture(aiTextureType_SPECULAR, j, &textureFileName) != AI_SUCCESS) {
+            continue;
+        }
+        std::string texturePath = path + "/" + textureFileName.C_Str();
+        for (const auto & textureSpecular : texturesSpecularModel) {
+            if (textureSpecular && *textureSpecular == texturePath) {
                 mesh.loadTextureSpecular(textureSpecular);
+                break;
             }
-        } 
+        }
+    }
 
-        material->GetTexture(aiTextureType_AMBIENT, j, &textureFileName);
-        for (auto & textureEmbient : texturesEmbientModel) {
-            if (textureEmbient == path + "/" + textureFileName.C_Str()) {
+    for (int j = 0; j < material->GetTextureCount(aiTextureType_AMBIENT); ++j) {
+        aiString textureFileName;
+        if (material->GetTexture(aiTextureType_AMBIENT, j, &textureFileName) != AI_SUCCESS) {
+            continue;
+        }
+        std::string texturePath = path + "/" + textureFileName.C_Str();
+        for (const auto & textureEmbient : texturesEmbientModel) {
+            if (textureEmbient && *textureEmbient == texturePath) {
                 mesh.loadTextureEmbient(textureEmbient);
+                break;
             }
-        }         
-    }       
+        }
+    }
 }
 
 glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from) {
@@ -207,12 +227,14 @@ glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 &from) {
 }
 
 void processNode(aiNode * node, const aiScene * scene, std::vector<Mesh> & meshesModel,
-                    std::vector<Texture> & texturesDiffuseModel, 
-                        std::vector<Texture> & texturesSpecularModel,
-                            std::vector<Texture> & texturesEmbientModel, glm::mat4 parentTransform) {
+                    std::vector<std::shared_ptr<Texture>> & texturesDiffuseModel,
+                        std::vector<std::shared_ptr<Texture>> & texturesSpecularModel,
+                            std::vector<std::shared_ptr<Texture>> & texturesEmbientModel, glm::mat4 parentTransform) {
 
     glm::mat4x4 nodeTransform = parentTransform * aiMatrix4x4ToGlm(node->mTransformation);
-    std::string path = ResourceManager::getFilename().substr(0, ResourceManager::getFilename().find_last_of("/"));
+    const std::string filename = ResourceManager::getFilename();
+    const std::size_t separator = filename.find_last_of("/\\");
+    std::string path = separator == std::string::npos ? "." : filename.substr(0, separator);
 
     for (int i = 0; i < node->mNumMeshes; ++i) {
 

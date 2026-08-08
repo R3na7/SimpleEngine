@@ -40,13 +40,13 @@ public:
 
     void bindVertexArray() const;
 
-    void loadTextureDiffuse   (Texture & texture);
-    void loadTextureSpecular  (Texture & texture);
-    void loadTextureEmbient   (Texture & texture);
+    void loadTextureDiffuse   (const std::shared_ptr<Texture> & texture);
+    void loadTextureSpecular  (const std::shared_ptr<Texture> & texture);
+    void loadTextureEmbient   (const std::shared_ptr<Texture> & texture);
 
-    void removeTextureDiffuse (Texture & texture);
-    void removeTextureSpecular(Texture & texture);
-    void removeTextureEmbient (Texture & texture);
+    void removeTextureDiffuse (const std::shared_ptr<Texture> & texture);
+    void removeTextureSpecular(const std::shared_ptr<Texture> & texture);
+    void removeTextureEmbient (const std::shared_ptr<Texture> & texture);
 
     void clearTexturesDiffuse();
     void clearTexturesSpecular();
@@ -60,9 +60,9 @@ public:
     float                          getShininess()        const;
     unsigned int                   getIndicesCount()     const;
     unsigned int                   getVerticesCount()    const;
-    const std::vector<Texture *> & getTexturesDiffuse()  const;
-    const std::vector<Texture *> & getTexturesSpecular() const;
-    const std::vector<Texture *> & getTexturesEmbient()  const;
+    const std::vector<std::shared_ptr<Texture>> & getTexturesDiffuse()  const;
+    const std::vector<std::shared_ptr<Texture>> & getTexturesSpecular() const;
+    const std::vector<std::shared_ptr<Texture>> & getTexturesEmbient()  const;
 
     static Mesh getCube(const glm::vec4 & color = {1.0f, 1.0f, 1.0f, 1.0f}, float size = 0.5f,
         const std::string & objectName = "cube");
@@ -72,9 +72,9 @@ public:
 private:
     std::vector<Vertex> _vertices{};
     std::vector<unsigned int> _indices{};
-    std::vector<Texture *> _texturesDiffuse;
-    std::vector<Texture *> _texturesSpecular;
-    std::vector<Texture *> _texturesEmbient;
+    std::vector<std::shared_ptr<Texture>> _texturesDiffuse;
+    std::vector<std::shared_ptr<Texture>> _texturesSpecular;
+    std::vector<std::shared_ptr<Texture>> _texturesEmbient;
 
     glm::vec4 _color;
     float _shininess = 64.0f;

@@ -15,7 +15,7 @@ out vec3 Normal;
 
 void main()
 {  
-   mat4 model = modelMesh * modelModel;
+   mat4 model = modelModel * modelMesh;
 
    gl_Position = projection * view * model * vec4(aPos, 1.0);
    

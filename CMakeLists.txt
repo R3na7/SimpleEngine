@@ -4,11 +4,11 @@ project(Engine)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build" FORCE)
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin")
 
 include(FetchContent)
 set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/external")
@@ -73,20 +73,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 
-#stb_image.h
-file(DOWNLOAD "https://raw.githubusercontent.com/nothings/stb/master/stb_image.h" 
-             "${CMAKE_SOURCE_DIR}/external/stb_image/stb_image.h")
-
-
-#GLAD
-set(GLAD_URL "https://glad.dav1d.de/generated/tmpp_t79s5sglad/glad.zip")
-set(GLAD_ZIP "${CMAKE_SOURCE_DIR}/external/glad.zip")
-set(GLAD_DIR "${CMAKE_SOURCE_DIR}/external/glad")
-
-if(NOT EXISTS "${GLAD_DIR}")
-    file(DOWNLOAD ${GLAD_URL} ${GLAD_ZIP} SHOW_PROGRESS)
-    file(ARCHIVE_EXTRACT INPUT ${GLAD_ZIP} DESTINATION ${GLAD_DIR})
-endif()
+# GLAD is generated for OpenGL 3.3 and kept in the repository so a clean
+# configure does not depend on a temporary online-generator URL.
+set(GLAD_DIR "${CMAKE_SOURCE_DIR}/third_party/glad")
 
 add_library(glad STATIC "${GLAD_DIR}/src/glad.c")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
@@ -127,7 +116,7 @@ add_executable(${PROJECT_NAME}
 
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    "${CMAKE_SOURCE_DIR}/external"
+    "${CMAKE_SOURCE_DIR}/third_party"
     "${glm_SOURCE_DIR}"
 )
 
@@ -144,8 +133,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_SOURCE_DIR}/assets"
-    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
 )
-
 
 

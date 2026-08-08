@@ -6,6 +6,9 @@ ObjectController::ObjectController(std::shared_ptr<Object> object, InputObjects 
 }
 
 void ObjectController::handleKeyboardInput() {
+    if (!_object || !_controller || !_controller->_keyboard) {
+        return;
+    }
 
     if (_controller->_keyboard->isPressed(GLFW_KEY_W)) {
         auto lookAt = std::move(_object->lookAt());
@@ -66,6 +69,9 @@ void ObjectController::handleKeyboardInput() {
 }
 
 void ObjectController::handleMouseInput() {
+    if (!_object || !_controller || !_controller->_mouse) {
+        return;
+    }
 
     if (_controller->_mouse->isOffset()) {
         _object->Yaw(_controller->_mouse->getOffsetX());

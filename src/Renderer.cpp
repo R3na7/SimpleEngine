@@ -1,10 +1,16 @@
 #include "Renderer.hpp"
 #include "Utilities/Time.hpp"
+#include <algorithm>
+
+namespace {
+constexpr int LightArraySize = 10;
+constexpr int MaterialTextureArraySize = 5;
+}
 
 Renderer::Renderer(Window & window)
 : 
 _window(&window), 
-_shaderModels(std::make_unique<Shader>(Shader("assets/shaders/vertexModel.vs", "assets/shaders/fragmentModel.fs")))
+_shaderModels(std::make_unique<Shader>("assets/shaders/vertexModel.vs", "assets/shaders/fragmentModel.fs"))
 {
 
 }
@@ -37,8 +43,10 @@ void Renderer::updateFps() {
 void Renderer::renderLights(const World & world) const {
     int index = 0;
     
-    _shaderModels->uniform1i("pointLightCount", world.getPointLights().size());
+    _shaderModels->uniform1i("pointLightCount", static_cast<int>(std::min(
+        world.getPointLights().size(), static_cast<std::size_t>(LightArraySize))));
     for (const auto & pointLight : world.getPointLights()) {
+        if (index >= LightArraySize) break;
         _shaderModels->uniform3f("pointLights[" + std::to_string(index) + "]._position",  pointLight->position());
 
         _shaderModels->uniform1f("pointLights[" + std::to_string(index) + "]._constant",  pointLight->getConstant());
@@ -52,8 +60,10 @@ void Renderer::renderLights(const World & world) const {
     }
     index = 0;
 
-    _shaderModels->uniform1i("spotLightCount", world.getSpotLights().size());
+    _shaderModels->uniform1i("spotLightCount", static_cast<int>(std::min(
+        world.getSpotLights().size(), static_cast<std::size_t>(LightArraySize))));
     for (const auto & spotLight : world.getSpotLights()) {
+        if (index >= LightArraySize) break;
         _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._position",    spotLight->position());
         _shaderModels->uniform3f("spotLights[" + std::to_string(index) + "]._direction",   spotLight->lookAt());
         _shaderModels->uniform1f("spotLights[" + std::to_string(index) + "]._cutOff",      glm::cos(glm::radians(spotLight->getCutOff())));
@@ -69,8 +79,10 @@ void Renderer::renderLights(const World & world) const {
     }
     index = 0;
 
-    _shaderModels->uniform1i("directionLightCount", world.getDirectionLights().size());
+    _shaderModels->uniform1i("directionLightCount", static_cast<int>(std::min(
+        world.getDirectionLights().size(), static_cast<std::size_t>(LightArraySize))));
     for (const auto & directionLight : world.getDirectionLights()) {
+        if (index >= LightArraySize) break;
         _shaderModels->uniform3f("directionLights[" + std::to_string(index) + "]._direction",  directionLight->getDirection());
 
         _shaderModels->uniform3f("directionLights[" + std::to_string(index) + "]._ambient",   directionLight->getAmbient());
@@ -90,26 +102,38 @@ void Renderer::renderMesh(const Mesh & mesh) const {
     int index = 0;
 
     int id = 0;
-    _shaderModels->uniform1i("materialDiffuseCount", mesh.getTexturesDiffuse().size());
     for (const auto & texture : mesh.getTexturesDiffuse()) {
+        if (index >= MaterialTextureArraySize) break;
+        if (!texture || !texture->isLoaded()) {
+            continue;
+        }
         texture->bindTextureDiffuse(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
+    _shaderModels->uniform1i("materialDiffuseCount", index);
     index = 0;
-    _shaderModels->uniform1i("materialSpecularCount", mesh.getTexturesSpecular().size());
     for (const auto & texture : mesh.getTexturesSpecular()) {
+        if (index >= MaterialTextureArraySize) break;
+        if (!texture || !texture->isLoaded()) {
+            continue;
+        }
         texture->bindTextureSpecular(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
+    _shaderModels->uniform1i("materialSpecularCount", index);
     index = 0;
-    _shaderModels->uniform1i("materialEmbientCount", mesh.getTexturesEmbient().size());
     for (const auto & texture : mesh.getTexturesEmbient()) {
+        if (index >= MaterialTextureArraySize) break;
+        if (!texture || !texture->isLoaded()) {
+            continue;
+        }
         texture->bindTextureAmbient(*_shaderModels, id, index);
         id += 1;
         index += 1;
     }
+    _shaderModels->uniform1i("materialEmbientCount", index);
     
     glDrawElements(GL_TRIANGLES  , mesh.getIndicesCount(), GL_UNSIGNED_INT, 0);    
 }
@@ -131,7 +155,10 @@ void Renderer::renderModels(const World & world) const {
 
 void Renderer::render(const World & world) {
     if (!_window->isOpen()) return;
-    if (_window->shouldClose()) _window->close();
+    if (_window->shouldClose()) {
+        _window->close();
+        return;
+    }
 
     _window->makeContext();
     _shaderModels->use();
@@ -148,4 +175,4 @@ void Renderer::render(const World & world) {
     _window->swapBuffers();
     glfwSwapInterval(1);
     glfwPollEvents();
-}  
+}

@@ -20,9 +20,9 @@ public:
 
 private:
     GLFWwindow * _window;
-    std::array<bool, GLFW_KEY_LAST> _keys = {};
-    std::array<bool, GLFW_KEY_LAST> _keysPressed = {};
-    std::array<bool, GLFW_KEY_LAST> _keysReleased = {};
+    std::array<bool, GLFW_KEY_LAST + 1> _keys = {};
+    std::array<bool, GLFW_KEY_LAST + 1> _keysPressed = {};
+    std::array<bool, GLFW_KEY_LAST + 1> _keysReleased = {};
 
     static void keyboardCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
     

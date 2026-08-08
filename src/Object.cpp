@@ -3,7 +3,7 @@
 
 
 Object::Object(const std::string & objectName, const glm::vec3 & position, float pitch, float yaw, glm::mat4x4 model)
-: _objectName(objectName), _position(glm::vec3{0.0f, 0.0f, 0.0f}), _pitch(pitch), _yaw(yaw), _model(model) {}
+: _objectName(objectName), _position(position), _pitch(pitch), _yaw(yaw), _model(model) {}
 
 Object::Object(const Object & object) 
 : _objectName(object._objectName), _pitch(object._pitch), _yaw(object._yaw), 

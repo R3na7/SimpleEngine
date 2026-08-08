@@ -9,10 +9,16 @@
 
 struct InputObjects {
     InputObjects(Keyboard * keyboard = nullptr, Mouse * mouse = nullptr);
+    InputObjects(const InputObjects &) = delete;
+    InputObjects(InputObjects &&) = delete;
+    InputObjects & operator=(const InputObjects &) = delete;
+    InputObjects & operator=(InputObjects &&) = delete;
 
-    GLFWwindow * _window;
-    Keyboard   * _keyboard;
-    Mouse * _mouse;
+    ~InputObjects();
+
+    GLFWwindow * _window = nullptr;
+    Keyboard   * _keyboard = nullptr;
+    Mouse      * _mouse = nullptr;
 };
 
 #endif

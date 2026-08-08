@@ -12,7 +12,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 Window::Window(int width, int height, const char * title, bool isFullscreen)
-: _width(width), _height(height), _title(title), _isFullscreen(isFullscreen), _isOpen(true) {   
+: _width(width), _height(height), _title(title ? title : ""), _isFullscreen(isFullscreen) {
 
     if (_isFullscreen) {
         _window = glfwCreateWindow(_width, _height, _title.c_str(), glfwGetPrimaryMonitor(), NULL);
@@ -20,9 +20,19 @@ Window::Window(int width, int height, const char * title, bool isFullscreen)
         _window = glfwCreateWindow(_width, _height, _title.c_str(), NULL, NULL);
     }
 
+    if (!_window) {
+        std::cerr << "Failed to create GLFW window\n";
+        return;
+    }
+
     glfwMakeContextCurrent(_window);
-    
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD\n";
+        glfwDestroyWindow(_window);
+        _window = nullptr;
+        return;
+    }
     glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
 
     glEnable(GL_DEPTH_TEST);
@@ -32,25 +42,41 @@ Window::Window(int width, int height, const char * title, bool isFullscreen)
 }
 
 Window::Window(int width, int height, const char * title, const Window & share, bool isFullscreen) 
-: _width(width), _height(height), _title(title), _isFullscreen(isFullscreen), _isOpen(true) {
+: _width(width), _height(height), _title(title ? title : ""), _isFullscreen(isFullscreen) {
 
     if (_isFullscreen) {
         _window = glfwCreateWindow(_width, _height, _title.c_str(), glfwGetPrimaryMonitor(), share._window);
     } else {
         _window = glfwCreateWindow(_width, _height, _title.c_str(), NULL, share._window);
     }
-    glfwMakeContextCurrent(share._window);
+    if (!_window) {
+        std::cerr << "Failed to create GLFW window\n";
+        return;
+    }
+
+    glfwMakeContextCurrent(_window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD\n";
+        glfwDestroyWindow(_window);
+        _window = nullptr;
+        return;
+    }
 
     glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
+    glEnable(GL_DEPTH_TEST);
 
     _isOpen = true;
     ++_windowCount;
 }
 
 Window::Window(const Window & window)
-: Window(window._width, window._height, window._title.c_str(), window._isFullscreen) {}
+: Window(window._width, window._height, window._title.c_str(), window._isFullscreen) {
+    _backgroundColor = window._backgroundColor;
+}
 
 bool Window::shouldClose() const {
+    if (!_window) return true;
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) return true;
 
     // if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -65,21 +91,27 @@ bool Window::shouldClose() const {
 void Window::close() {
     if (!_isOpen) return;
 
-    glfwDestroyWindow(_window);
     _isOpen = false;
     --_windowCount;
+    if (_window) {
+        glfwSetWindowShouldClose(_window, GLFW_TRUE);
+    }
 }
 
 void Window::swapBuffers() {
-    glfwSwapBuffers(_window);
+    if (_window) {
+        glfwSwapBuffers(_window);
+    }
 }
 
 void Window::makeContext() {
-    glfwMakeContextCurrent(_window);
+    if (_window) {
+        glfwMakeContextCurrent(_window);
+    }
 }
 
 bool Window::havesWindow() {
-    return _windowCount;
+    return _windowCount > 0;
 }
 
 
@@ -89,12 +121,15 @@ std::string Window::getTitle()         const  {    return _title;     }
 int Window::getWidht()                 const  {    return _width;     }
 int Window::getHeight()                const  {    return _height;    }
 glm::vec4 Window::getBackgroundColor() const  {    return glm::vec4(_backgroundColor[0], _backgroundColor[1], _backgroundColor[2], _backgroundColor[3]);   }
+bool Window::getContext() const               {    return _window && glfwGetCurrentContext() == _window;   }
 
 void Window::setWidht(int width)              {    _width = width;    }
 void Window::setHeight(int height)            {    _height = height;  }
 void Window::setTitile(const char * title)    {   
-    _title = title;    
-    glfwSetWindowTitle(_window, _title.c_str());
+    _title = title ? title : "";
+    if (_window) {
+        glfwSetWindowTitle(_window, _title.c_str());
+    }
 }
 void Window::setBackgroundColor (const glm::vec4 & backgroundColor) {
     _backgroundColor = backgroundColor;
@@ -114,7 +149,14 @@ bool Window::isOpen()       const  {   return _isOpen;       }
 
 
 Window::~Window() {
-    glfwDestroyWindow(_window);
+    if (_isOpen) {
+        --_windowCount;
+    }
+    if (_window) {
+        glfwDestroyWindow(_window);
+    }
+    _window = nullptr;
+    _isOpen = false;
 }
 
 #endif
